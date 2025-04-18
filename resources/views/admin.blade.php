@@ -1,158 +1,9 @@
 <?php
-session_start();
-require 'config.php';
-
-// abar check korbo.. je log in korse se ki ado o admin ki na.
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header('Location: login.html');
-    exit();
-}
-
-// Handle form submissions
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Add or edit student
-    if (isset($_POST['action']) && $_POST['action'] === 'add_edit_student') {
-        $name = $_POST['student_name'];
-        $pass = $_POST['tpass'];
-        $department = $_POST['student_department'];
-        $student_id = $_POST['student_id'] ?? uniqid();
-        $username = strtolower(str_replace(' ', '_', $name));
-
-        if (isset($_POST['edit_id']) && !empty($_POST['edit_id'])) {
-            // Update existing student
-            $stmt = $pdo->prepare("UPDATE students SET name = :name, department = :department WHERE id = :id");
-            $stmt->execute([':id' => $_POST['edit_id'], ':name' => $name, ':department' => $department]);
-
-            // Update user if password is provided
-            if (!empty($pass)) {
-                $stmt = $pdo->prepare("UPDATE users SET password = :password WHERE id = (SELECT user_id FROM students WHERE id = :id)");
-                $stmt->execute([':id' => $_POST['edit_id'], ':password' => $pass]);
-            }
-        } else {
-            // Insert new student
-            $stmt = $pdo->prepare("INSERT INTO users (username, password, role) VALUES (:username, :password, 'student')");
-            $stmt->execute([':username' => $username, ':password' =>$pass]);
-
-            $user_id = $pdo->lastInsertId();
-            
-            $stmt = $pdo->prepare("INSERT INTO students (user_id, name, student_id, department) VALUES (:user_id, :name, :student_id, :department)");
-            $stmt->execute([':user_id' => $user_id, ':name' => $name, ':student_id' => $student_id, ':department' => $department]);
-        }
-    }
-    
-    // Add or edit faculty
-    if (isset($_POST['action']) && $_POST['action'] === 'add_edit_faculty') {
-        $name = $_POST['faculty_name'];
-        $department = $_POST['faculty_department'];
-        $passw = $_POST['facpass'];
-        $username = strtolower(str_replace(' ', '_', $name));
-
-        if (isset($_POST['edit_id']) && !empty($_POST['edit_id'])) {
-            // Update existing faculty
-            $stmt = $pdo->prepare("UPDATE faculty SET name = :name, department = :department WHERE id = :id");
-            $stmt->execute([':id' => $_POST['edit_id'], ':name' => $name, ':department' => $department]);
-
-            // Update user if password is provided
-            if (!empty($passw)) {
-                $stmt = $pdo->prepare("UPDATE users SET password = :password WHERE id = (SELECT user_id FROM faculty WHERE id = :id)");
-                $stmt->execute([':id' => $_POST['edit_id'], ':password' => $passw]);
-            }
-        } else {
-            // Insert new faculty
-            $stmt = $pdo->prepare("INSERT INTO users (username, password, role) VALUES (:username, :password, 'faculty')");
-            $stmt->execute([':username' => $username, ':password' => $passw]);
-
-            $user_id = $pdo->lastInsertId();
-            
-            $stmt = $pdo->prepare("INSERT INTO faculty (user_id, name, department) VALUES (:user_id, :name, :department)");
-            $stmt->execute([':user_id' => $user_id, ':name' => $name, ':department' => $department]);
-        }
-    }
-
-    // Add or edit course
-    if (isset($_POST['action']) && $_POST['action'] === 'add_edit_course') {
-        $course_code = $_POST['course_code'];
-        $course_name = $_POST['course_name'];
-        $section = $_POST['course_section'];
-        $faculty_id = $_POST['faculty_id'];
-        $class_days = $_POST['class_days'];
-        $start_time = $_POST['start_time'];
-        $end_time = $_POST['end_time'];
-        $join_link = $_POST['join_link'];
-        $frequency = $_POST['frequency'];
-
-        if (isset($_POST['edit_id']) && !empty($_POST['edit_id'])) {
-            // Update existing course
-            $stmt = $pdo->prepare("UPDATE classes SET course_code = :course_code, course_name = :course_name, section = :section, faculty_id = :faculty_id, class_days = :class_days, start_time = :start_time, end_time = :end_time, join_link = :join_link, frequency = :frequency WHERE id = :id");
-            $stmt->execute([
-                ':id' => $_POST['edit_id'],
-                ':course_code' => $course_code,
-                ':course_name' => $course_name,
-                ':section' => $section,
-                ':faculty_id' => $faculty_id,
-                ':class_days' => $class_days,
-                ':start_time' => $start_time,
-                ':end_time' => $end_time,
-                ':join_link' => $join_link,
-                ':frequency' => $frequency
-            ]);
-        } else {
-            // Insert new course
-            $stmt = $pdo->prepare("INSERT INTO classes (course_code, course_name, section, faculty_id, class_days, start_time, end_time, join_link, frequency) VALUES (:course_code, :course_name, :section, :faculty_id, :class_days, :start_time, :end_time, :join_link, :frequency)");
-            $stmt->execute([
-                ':course_code' => $course_code,
-                ':course_name' => $course_name,
-                ':section' => $section,
-                ':faculty_id' => $faculty_id,
-                ':class_days' => $class_days,
-                ':start_time' => $start_time,
-                ':end_time' => $end_time,
-                ':join_link' => $join_link,
-                ':frequency' => $frequency
-            ]);
-        }
-    }
-
-    // Assign or remove student from course
-    if (isset($_POST['action']) && $_POST['action'] === 'assign_remove_student') {
-        $student_id = $_POST['student_id'];
-        $course_id = $_POST['course_id'];
-        $assign_remove = $_POST['assign_remove'];
-
-        if ($assign_remove === 'assign') {
-            $stmt = $pdo->prepare("INSERT INTO enrollments (student_id, class_id) VALUES (:student_id, :class_id)");
-            $stmt->execute([':student_id' => $student_id, ':class_id' => $course_id]);
-        } else {
-            $stmt = $pdo->prepare("DELETE FROM enrollments WHERE student_id = :student_id AND class_id = :class_id");
-            $stmt->execute([':student_id' => $student_id, ':class_id' => $course_id]);
-        }
-    }
-
-    // Delete record
-    if (isset($_POST['action']) && $_POST['action'] === 'delete') {
-        $table = $_POST['table'];
-        $id = $_POST['id'];
-
-        // If deleting a student or faculty, also delete the associated user
-        if ($table === 'students' || $table === 'faculty') {
-            $stmt = $pdo->prepare("DELETE FROM users WHERE id = (SELECT user_id FROM $table WHERE id = :id)");
-            $stmt->execute([':id' => $id]);
-        }
-
-        $stmt = $pdo->prepare("DELETE FROM $table WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-    }
-
-    // Redirect to prevent form resubmission
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
-}
-
 // Fetch existing data
-$students = $pdo->query("SELECT * FROM students")->fetchAll(PDO::FETCH_ASSOC);
-$faculty = $pdo->query("SELECT * FROM faculty")->fetchAll(PDO::FETCH_ASSOC);
-$courses = $pdo->query("SELECT c.*, f.name as faculty_name FROM classes c JOIN faculty f ON c.faculty_id = f.id")->fetchAll(PDO::FETCH_ASSOC);
-$enrollments = $pdo->query("SELECT e.*, s.name as student_name, c.course_code FROM enrollments e JOIN students s ON e.student_id = s.id JOIN classes c ON e.class_id = c.id")->fetchAll(PDO::FETCH_ASSOC);
+$students = \App\Models\Student::all();
+$faculty = \App\Models\Faculty::all();
+$courses = \App\Models\Course::all();
+$enrollments = \App\Models\Enrollment::all();
 ?>
 
 <!DOCTYPE html>
@@ -352,6 +203,8 @@ $enrollments = $pdo->query("SELECT e.*, s.name as student_name, c.course_code FR
         }
         form input[type="text"],
         form input[type="password"],
+        form input[type="email"],
+        form input[type="number"],
         form select {
             width: 100%;
             padding: 10px;
@@ -396,7 +249,7 @@ $enrollments = $pdo->query("SELECT e.*, s.name as student_name, c.course_code FR
 <body>
     <div class="container">
         <div class="sidebar">
-            <img src="/virtual_campus/262119406_281296240490710_5576796804703518377_n.png" alt="BRAC University Logo" class="logo">
+            <img src="/logo.png" alt="BRAC University Logo" class="logo">
             <h2 class="virtual-campus"><b>VIRTUAL CAMPUS</b></h2>
             <ul class="menu">
                 <li><b><a class="menus active" onclick="opentab('Dashboard')" href="#">Dashboard</a></b></li>
@@ -420,20 +273,23 @@ $enrollments = $pdo->query("SELECT e.*, s.name as student_name, c.course_code FR
                 <h2>Admin Dashboard</h2>
                 <div class="card">
                     <h3>Quick Stats</h3>
-                    <p>Total Students: <?= count($students) ?></p>
-                    <p>Total Faculty: <?= count($faculty) ?></p>
-                    <p>Total Courses: <?= count($courses) ?></p>
-                    <p>Total Enrollments: <?= count($enrollments) ?></p>
+                    <p>Total Students: <?= $students->count() ?></p>
+                    <p>Total Faculty: <?= $faculty->count() ?></p>
+                    <p>Total Courses: <?= $courses->count() ?></p>
+                    <p>Total Enrollments: <?= $enrollments->count() ?></p>
                 </div>
                 
             </div>
 
             <div class="grid" id="ManageStudents">
                 <h2>Manage Students</h2>
-                <form method="POST" id="studentForm">
-                    <input type="hidden" name="action" value="add_edit_student">
+                <form method="POST" action="{{ route('student_edit') }}" id="studentForm">
+                    @csrf
+                    <input type="hidden" name="action" value="add_student">
                     <input type="hidden" name="edit_id" id="studentEditId">
                     <label>Name: <input type="text" name="student_name" id="studentName" required></label>
+                    <label>Email: <input type="email" name="student_email" id="studentemail" placeholder="example@example.com" required></label>
+                    <label>Phone: <input type="number" name="student_number" placeholder="018546-82005" id="studentnumber" required></label>
                     <label>Password: <input type="password" name="tpass" id="studentPass"></label>
                     <label>Department:
                         <select name="student_department" id="studentDepartment" required>
@@ -446,7 +302,7 @@ $enrollments = $pdo->query("SELECT e.*, s.name as student_name, c.course_code FR
                             <option value="ECE">ECE</option>
                         </select>
                     </label>
-                    <button type="submit" class="button">Add/Edit Student</button>
+                    <button type="submit" class="button">Add / Edit Student</button>
                 </form>
                 <table>
                     <tr><th>ID</th><th>Name</th><th>Department</th><th>Actions</th></tr>
@@ -660,23 +516,6 @@ $enrollments = $pdo->query("SELECT e.*, s.name as student_name, c.course_code FR
             });
         }
 
-        $('form').on('submit', function(e) {
-            e.preventDefault();
-            var form = $(this);
-            $.ajax({
-                url: form.attr('action'),
-                method: form.attr('method'),
-                data: form.serialize(),
-                success: function(response) {
-                    // Reload the page to refresh the data
-                    location.reload();
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error submitting form:", error);
-                    alert("An error occurred while submitting the form. Please try again.");
-                }
-            });
-        });
     </script>
 </body>
 </html>

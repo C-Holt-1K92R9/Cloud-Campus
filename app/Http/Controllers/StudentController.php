@@ -14,7 +14,7 @@ class StudentController extends Controller
     public function index()
     {
         $students = Student::all(); // Fetch all students (adjust as needed)
-        return view('admin.students', compact('students')); // Return the view with data
+        return view('admin', compact('students')); // Return the view with data
     }
 
     /**
@@ -24,15 +24,18 @@ class StudentController extends Controller
     {
         $request->validate([
             'student_name' => 'required|string|max:255',
-            'tpass' => 'nullable|string|min:6', // Password is nullable for updates
+            'student_email' => 'required|email',
+            'student_number' => 'required|string|max:20',
             'student_department' => 'required|string|max:255',
+            'tpass' => 'nullable|string|min:6',
         ]);
+        
 
         if ($request->input('edit_id')) {
             // Update existing student
             $student = Student::find($request->input('edit_id'));
-            $student->name = $request->input('student_name');
-            $student->department = $request->input('student_department');
+            $student->student_name = $request->input('student_name');
+            $student->student_department = $request->input('student_department');
             $student->save();
 
             if ($request->input('tpass')) {
@@ -44,22 +47,14 @@ class StudentController extends Controller
         } else {
             // Create new student
             $student = new Student();
-            $student->name = $request->input('student_name');
-            $student->department = $request->input('student_department');
+            $student->student_name = $request->input('student_name');
+            $student->student_email = $request->input('student_email');
+            $student->student_phone = $request->input('student_number');
+            $student->student_department = $request->input('student_department');
             $student->save();
-
-            // Create a corresponding User (if needed)
-            // Hash the password!
-            // Example:
-            // $user = new User();
-            // $user->name = strtolower(str_replace(' ', '_', $request->input('student_name')));
-            // $user->password = Hash::make($request->input('tpass'));
-            // $user->save();
-            // $student->user_id = $user->id;
-            // $student->save();
         }
 
-        return redirect()->route('students.index')->with('success', 'Student saved successfully!');
+        return redirect()->route('student.index')->with('success', 'Student saved successfully!');
     }
 
     /**
@@ -70,6 +65,6 @@ class StudentController extends Controller
         $student = Student::find($id);
         $student->delete();
 
-        return redirect()->route('students.index')->with('success', 'Student deleted successfully!');
+        return redirect()->route('student.index')->with('success', 'Student deleted successfully!');
     }
 }
