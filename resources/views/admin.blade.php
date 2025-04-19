@@ -302,17 +302,18 @@ $enrollments = \App\Models\Enrollment::all();
                             <option value="ECE">ECE</option>
                         </select>
                     </label>
-                    <button type="submit" class="button">Add / Edit Student</button>
+                    <button type="submit" id="sbutton" class="button">Add</button>
+                    <button type="button" class="button" onclick="resetForm('studentForm')">Reset</button>
                 </form>
                 <table>
                     <tr><th>ID</th><th>Name</th><th>Department</th><th>Actions</th></tr>
                     <?php foreach ($students as $student): ?>
                         <tr>
-                            <td><?= $student['id'] ?></td>
-                            <td><?= $student['name'] ?></td>
-                            <td><?= $student['department'] ?></td>
+                            <td><?= $student['student_id'] ?></td>
+                            <td><?= $student['student_name'] ?></td>
+                            <td><?= $student['student_department'] ?></td>
                             <td>
-                                <button onclick="editStudent(<?= htmlspecialchars(json_encode($student)) ?>)" class="button">Edit</button>
+                            <a href=#top><button onclick="editStudent(<?= htmlspecialchars(json_encode($student)) ?>)" class="button">Edit</button></a>
                                 <form method="POST" style="display:inline;">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="table" value="students">
@@ -479,12 +480,14 @@ $enrollments = \App\Models\Enrollment::all();
         }
 
         function editStudent(student) {
-            $('#studentEditId').val(student.id);
-            $('#studentName').val(student.name);
-            $('#studentDepartment').val(student.department);
-            $('#studentPass').val('');
-            $('#studentForm').find('button[type="submit"]').text('Update Student');
+            document.getElementById('studentEditId').value = student.student_id;
+            document.getElementById('studentemail').value = student.student_email;
+            document.getElementById('studentnumber').value = student.student_phone;
+            document.getElementById('studentName').value = student.student_name;
+            document.getElementById('studentDepartment').value = student.student_department;
+            document.getElementById('sbutton').innerHTML = 'Update Student';
         }
+        
 
         function editFaculty(faculty) {
             $('#facultyEditId').val(faculty.id);

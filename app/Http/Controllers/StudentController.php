@@ -35,6 +35,8 @@ class StudentController extends Controller
             // Update existing student
             $student = Student::find($request->input('edit_id'));
             $student->student_name = $request->input('student_name');
+            $student->student_email = $request->input('student_email');
+            $student->student_phone = $request->input('student_number');
             $student->student_department = $request->input('student_department');
             $student->save();
 
