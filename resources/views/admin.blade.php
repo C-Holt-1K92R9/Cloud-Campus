@@ -23,10 +23,22 @@ $enrollments = \App\Models\Enrollment::all();
         }
         .container {
             display: flex;
+            height: 100vh; /* Full viewport height */
+            overflow: hidden;
+            
+           
         }
         .sidebar {
-            width: 280px;
-            background-color: #171717;
+            background-color: #1a1a1a; /* or whatever color you prefer */
+            color: white;
+            padding: 20px;
+            flex-shrink: 0; /* Prevent shrinking */
+            overflow-y: none; /* Allow scrolling inside sidebar if content overflows */
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 260px;
             padding: 20px;
             height: 100vh;
             display: flex;
@@ -65,7 +77,11 @@ $enrollments = \App\Models\Enrollment::all();
         .content {
             flex-grow: 1;
             padding: 30px;
-        }
+            margin-left: 300px; /* Same as sidebar width */
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+                    }
         .header {
             display: flex;
             justify-content: space-between;
@@ -258,10 +274,10 @@ $enrollments = \App\Models\Enrollment::all();
                 <li><b><a class="menus" onclick="opentab('ManageCourses')" href="#">Manage Courses</a></b></li>
                 <li><b><a class="menus" onclick="opentab('ManageEnrollments')" href="#">Manage Enrollments</a></b></li>
             </ul>
-            <div>
-                <br><br><br><br><br><br><br><br><br>
+          
+                
             <a href="/virtual_campus/login.php" class="button_out">Log Out</a>
-            </div>
+            
         </div>
         <div class="content">
             <div class="header">
