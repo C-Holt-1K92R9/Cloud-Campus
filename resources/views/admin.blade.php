@@ -314,10 +314,9 @@ $enrollments = \App\Models\Enrollment::all();
                             <td><?= $student['student_department'] ?></td>
                             <td>
                             <a href=#top><button onclick="editStudent(<?= htmlspecialchars(json_encode($student)) ?>)" class="button">Edit</button></a>
-                                <form method="POST" style="display:inline;">
-                                    <input type="hidden" name="action" value="delete">
-                                    <input type="hidden" name="table" value="students">
-                                    <input type="hidden" name="id" value="<?= $student['id'] ?>">
+                                <form method="POST" action="{{ route('student_del') }}" style="display:inline;">
+                                    @csrf
+                                    <input type="hidden" name="s_del_id" value="<?= $student['student_id'] ?>">
                                     <button type="submit" class="button" onclick="return confirm('Are you sure you want to delete this student?')">Delete</button>
                                 </form>
                             </td>

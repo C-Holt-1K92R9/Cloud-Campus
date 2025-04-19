@@ -10,4 +10,5 @@ Route::get('/', function () {
     return view("admin");
 });
 Route::post('/students/edit', [StudentController::class, 'store'])->name('student_edit');
+Route::post('/students/del', [StudentController::class, 'destroy'])->name('student_del');
 Route::get('/student', [StudentController::class, 'index'])->name('student.index');
