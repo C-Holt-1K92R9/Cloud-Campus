@@ -325,14 +325,14 @@ $enrollments = \App\Models\Enrollment::all();
                     <tr><th>ID</th><th>Name</th><th>Department</th><th>Actions</th></tr>
                     <?php foreach ($students as $student): ?>
                         <tr>
-                            <td><?= $student['student_id'] ?></td>
+                            <td><?= $student['u_id'] ?></td>
                             <td><?= $student['student_name'] ?></td>
                             <td><?= $student['student_department'] ?></td>
                             <td>
                             <a href=#top><button onclick="editStudent(<?= htmlspecialchars(json_encode($student)) ?>)" class="button">Edit</button></a>
                                 <form method="POST" action="{{ route('student_del') }}" style="display:inline;">
                                     @csrf
-                                    <input type="hidden" name="s_del_id" value="<?= $student['student_id'] ?>">
+                                    <input type="hidden" name="s_del_id" value="<?= $student['u_id'] ?>">
                                     <button type="submit" class="button" onclick="return confirm('Are you sure you want to delete this student?')">Delete</button>
                                 </form>
                             </td>
@@ -495,7 +495,7 @@ $enrollments = \App\Models\Enrollment::all();
         }
 
         function editStudent(student) {
-            document.getElementById('studentEditId').value = student.student_id;
+            document.getElementById('studentEditId').value = student.u_id;
             document.getElementById('studentemail').value = student.student_email;
             document.getElementById('studentnumber').value = student.student_phone;
             document.getElementById('studentName').value = student.student_name;
