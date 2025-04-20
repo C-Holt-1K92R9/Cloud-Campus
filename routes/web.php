@@ -17,3 +17,7 @@ Route::get('/student', [StudentController::class, 'index'])->name('student.index
 Route::post('/faculty/edit', [FacultyController::class, 'store'])->name('faculty_edit');
 Route::post('/faculty/del', [FacultyController::class, 'destroy'])->name('faculty_del');
 Route::get('/faculty', [FacultyController::class, 'index'])->name('faculty.index');
+// For course management
+Route::post('/course/edit', [CourseController::class, 'store'])->name('course_edit');
+Route::post('/course/del', [CourseController::class, 'destroy'])->name('course_del');
+Route::get('/course', [CourseController::class, 'index'])->name('course.index');

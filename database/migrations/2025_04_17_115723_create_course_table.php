@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id("course_id");
             $table->string('course_code');
             $table->string('course_name');
-            $table->string('course_description')->nullable();
+            $table->text('course_description')->nullable();
             $table->string('course_section');
             $table->string("course_time");
             $table->string('course_days');

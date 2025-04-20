@@ -280,8 +280,8 @@ $enrollments = \App\Models\Enrollment::all();
             
         </div>
         <div class="content">
-            <div class="header">
-                <h2 class="greeting">⛅Welcome, Admin</h2>
+            <div id="top" class="header">
+                <h2 class="greeting" >⛅Welcome, Admin</h2>
                 
             </div>
 
@@ -318,7 +318,7 @@ $enrollments = \App\Models\Enrollment::all();
                             <option value="ECE">ECE</option>
                         </select>
                     </label>
-                    <button type="submit" id="sbutton" class="button">Add</button>
+                    <button type="submit" id="sbutton" class="button">Add Student</button>
                     <button type="button" class="button" onclick="resetForm('studentForm')">Reset</button>
                 </form>
                 <table>
@@ -333,7 +333,7 @@ $enrollments = \App\Models\Enrollment::all();
                                 <form method="POST" action="{{ route('student_del') }}" style="display:inline;">
                                     @csrf
                                     <input type="hidden" name="s_del_id" value="<?= $student['u_id'] ?>">
-                                    <button type="submit" class="button" onclick="return confirm('Are you sure you want to delete this student?')">Delete</button>
+                                    <a href=#top><button type="submit" class="button" onclick="return confirm('Are you sure you want to delete this student?')">Delete</button></a>
                                 </form>
                             </td>
                         </tr>
@@ -362,7 +362,8 @@ $enrollments = \App\Models\Enrollment::all();
                             <option value="ECE">ECE</option>
                         </select>
                     </label>
-                    <button type="submit" id="fbutton" class="button">Add</button>
+                    <button type="submit" id="fbutton" class="button">Add Faculty</button>
+                    <button type="button" class="button" onclick="resetForm('facultyForm')">Reset</button>
                 </form>
                 <table>
                     <tr><th>ID</th><th>Name</th><th>Initial</th><th>Department</th><th>Actions</th></tr>
@@ -373,12 +374,12 @@ $enrollments = \App\Models\Enrollment::all();
                             <td><?= $fac['faculty_initial'] ?></td>
                             <td><?= $fac['faculty_department'] ?></td>
                             <td>
-                                <button onclick="editFaculty(<?= htmlspecialchars(json_encode($fac)) ?>)" class="button">Edit</button>
+                            <a href=#top><button onclick="editFaculty(<?= htmlspecialchars(json_encode($fac)) ?>)" class="button">Edit</button></a>
                                 <form method="POST" action="{{route('faculty_del')}}" style="display:inline;">
                                     @csrf
                                     
                                     <input type="hidden" name="f_del_id" value="<?= $fac['u_id'] ?>">
-                                    <button type="submit" class="button" onclick="return confirm('Are you sure you want to delete this faculty member?')">Delete</button>
+                                    <a href=#top><button type="submit" class="button" onclick="return confirm('Are you sure you want to delete this faculty member?')">Delete</button></a>
                                 </form>
                             </td>
                         </tr>
@@ -388,54 +389,58 @@ $enrollments = \App\Models\Enrollment::all();
 
             <div class="grid" id="ManageCourses">
                 <h2>Manage Courses</h2>
-                <form method="POST" id="courseForm">
-                    <input type="hidden" name="action" value="add_edit_course">
+                <form method="POST" action="{{route('course_edit')}}" id="courseForm">
+                    @csrf
                     <input type="hidden" name="edit_id" id="courseEditId">
                     <label>Course Code: <input type="text" name="course_code" id="courseCode" required></label>
                     <label>Course Name: <input type="text" name="course_name" id="courseName" required></label>
+                    <label>Course Description: <input type="text" name="course_description" id="courseDescription" required></label>
                     <label>Section: <input type="text" name="course_section" id="courseSection" required></label>
                     <label>Faculty:
-                        <select name="faculty_id" id="courseFaculty" required>
+                        <select name="course_instructor" id="courseFaculty" required>
                             <?php foreach ($faculty as $fac): ?>
-                                <option value="<?= $fac['id'] ?>"><?= $fac['name'] ?></option>
+                                <option value="<?= $fac['faculty_initial'] ?>"><?= $fac['faculty_initial']." : ".$fac['faculty_name'] ?></option>
                             <?php endforeach; ?>
                         </select>
                     </label>
                     <label>Class Days:
-                        <select name="class_days" id="classDays" required>
-                            <option value="Monday">Monday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option>
-                            <option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                            <option value="Saturday">Saturday</option>
-                            <option value="Sunday">Sunday</option>
+                        <select name="course_days" id="classDays" required>
+                            <option value="Thursday, Saturday">Thursday, Saturday</option>
+                            <option value="sunday, Tuesday">sunday, Tuesday</option>
+                            <option value="Monday, Wednesday">Monday, Wednesday</option>  
                         </select>
                     </label>
-                    <label>Start Time: <input type="time" name="start_time" id="startTime" required></label>
-                    <label>End Time: <input type="time" name="end_time" id="endTime" required></label>
-                    <label>Join Link: <input type="url" name="join_link" id="joinLink" required></label>
-                    <label>Frequency: <input type="number" name="frequency" id="frequency" min="1" max="7" required></label>
-                    <button type="submit" class="button">Add/Edit Course</button>
+                    <label>Course Time: 
+                        <select name="course_time" id="classTime" required>
+                            <option value="8:00 AM - 9:20 AM">8:00 AM - 9:20 AM</option>
+                            <option value="9:30 AM - 10:50 AM">9:30 AM - 10:50 AM</option>
+                            <option value="11:00 AM - 12:20 PM">11:00 AM - 12:20 PM</option>
+                            <option value="12:30 PM - 1:50 PM">12:30 PM - 1:50 PM</option>
+                            <option value="2:00 PM - 3:20 PM">2:00 PM - 3:20 PM</option>
+                            <option value="3:30 PM - 4:50 PM">3:30 PM - 4:50 PM</option>
+                            <option value="5:00 PM - 6:20 PM">5:00 PM - 6:20 PM</option>    
+                        </select>
+                    </label>
+                    <button type="submit" id="cbutton" class="button">Add Course</button>
+                    <button type="button" class="button" onclick="resetForm('courseForm')">Reset</button>
                 </form>
                 <table>
                     <tr><th>ID</th><th>Course Code</th><th>Course Name</th><th>Section</th><th>Faculty</th><th>Class Days</th><th>Time</th><th>Actions</th></tr>
                     <?php foreach ($courses as $course): ?>
                         <tr>
-                            <td><?= $course['id'] ?></td>
+                            <td><?= $course['course_id'] ?></td>
                             <td><?= $course['course_code'] ?></td>
                             <td><?= $course['course_name'] ?></td>
-                            <td><?= $course['section'] ?></td>
-                            <td><?= $course['faculty_name'] ?></td>
-                            <td><?= $course['class_days'] ?></td>
-                            <td><?= $course['start_time'] ?> - <?= $course['end_time'] ?></td>
+                            <td><?= $course['course_section'] ?></td>
+                            <td><?= $course['course_instructor'] ?></td>
+                            <td><?= $course['course_days'] ?></td>
+                            <td><?= $course['course_time'] ?></td>
                             <td>
-                                <button onclick="editCourse(<?= htmlspecialchars(json_encode($course)) ?>)" class="button">Edit</button>
-                                <form method="POST" style="display:inline;">
-                                    <input type="hidden" name="action" value="delete">
-                                    <input type="hidden" name="table" value="classes">
-                                    <input type="hidden" name="id" value="<?= $course['id'] ?>">
-                                    <button type="submit" class="button" onclick="return confirm('Are you sure you want to delete this course?')">Delete</button>
+                            <a href=#top><button onclick="editCourse(<?= htmlspecialchars(json_encode($course)) ?>)" class="button">Edit</button></a>
+                                <form method="POST" action="{{route('course_del')}}" style="display:inline;">
+                                    @csrf
+                                    <input type="hidden" name="course_del_id" value="<?= $course['course_id'] ?>">
+                                    <a href=#top><button type="submit" class="button" onclick="return confirm('Are you sure you want to delete this course?')">Delete</button></a>
                                 </form>
                             </td>
                         </tr>
@@ -450,14 +455,14 @@ $enrollments = \App\Models\Enrollment::all();
                     <label>Student:
                         <select name="student_id" required>
                             <?php foreach ($students as $student): ?>
-                                <option value="<?= $student['id'] ?>"><?= $student['name'] ?></option>
+                                <option value="<?= $student['u_id'] ?>"><?= $student['u_id'].": ".$student['student_name'] ?></option>
                             <?php endforeach; ?>
                         </select>
                     </label>
                     <label>Course:
                         <select name="course_id" required>
                             <?php foreach ($courses as $course): ?>
-                                <option value="<?= $course['id'] ?>"><?= $course['course_code'] ?> (<?= $course['section'] ?>)</option>
+                                <option value="<?= $course['id'] ?>"><?= $course['course_code'] ?> (<?= $course['course_section'] ?>)</option>
                             <?php endforeach; ?>
                         </select>
                     </label>
@@ -492,12 +497,28 @@ $enrollments = \App\Models\Enrollment::all();
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function opentab(tabname) {
-            $('.grid').removeClass('active');
-            $('#' + tabname).addClass('active');
-            $('.menus').removeClass('active');
-            $('a[onclick="opentab(\'' + tabname + '\')"]').addClass('active');
+            const tab = new URLSearchParams(window.location.search).get('tab');
+            if (tab) {
+                document.querySelector('.grid.active').classList.remove('active');
+                document.querySelector('#' + tab).classList.add('active');
+            } else {
+                document.querySelector('.grid.active').classList.remove('active');
+                document.querySelector('#' + tabname).classList.add('active');
+            }
+              
         }
 
+        function editCourse(course) {
+            document.getElementById('courseEditId').value = course.course_id;
+            document.getElementById('courseCode').value = course.course_code;
+            document.getElementById('courseName').value = course.course_name;
+            document.getElementById('courseDescription').value = course.course_description;
+            document.getElementById('courseSection').value = course.course_section;
+            document.getElementById('courseFaculty').value = course.course_instructor;
+            document.getElementById('classDays').value = course.course_days;
+            document.getElementById('classTime').value = course.course_time;
+            document.getElementById('cbutton').innerHTML = 'Update Course';
+        }
         function editStudent(student) {
             document.getElementById('studentEditId').value = student.u_id;
             document.getElementById('studentemail').value = student.student_email;
@@ -516,27 +537,16 @@ $enrollments = \App\Models\Enrollment::all();
             document.getElementById('facultyinitial').value = faculty.faculty_initial;
             document.getElementById('facultydepartment').value = faculty.faculty_department;
             document.getElementById('fbutton').innerHTML = 'Update Faculty';
+            
         }
 
-        function editCourse(course) {
-            $('#courseEditId').val(course.id);
-            $('#courseCode').val(course.course_code);
-            $('#courseName').val(course.course_name);
-            $('#courseSection').val(course.section);
-            $('#courseFaculty').val(course.faculty_id);
-            $('#classDays').val(course.class_days);
-            $('#startTime').val(course.start_time);
-            $('#endTime').val(course.end_time);
-            $('#joinLink').val(course.join_link);
-            $('#frequency').val(course.frequency);
-            $('#courseForm').find('button[type="submit"]').text('Update Course');
-        }
+        
 
         function resetForm(formId) {
             $('#' + formId)[0].reset();
             $('#' + formId).find('input[type="hidden"][name="edit_id"]').val('');
             $('#' + formId).find('button[type="submit"]').text(function() {
-                return $(this).text().replace('Update', 'Add/Edit');
+                return $(this).text().replace('Update', 'Add');
             });
         }
 
