@@ -343,13 +343,16 @@ $enrollments = \App\Models\Enrollment::all();
 
             <div class="grid" id="ManageFaculty">
                 <h2>Manage Faculty</h2>
-                <form method="POST" id="facultyForm">
-                    <input type="hidden" name="action" value="add_edit_faculty">
+                <form method="POST" action="{{route('faculty_edit')}}" id="facultyForm">
+                    @csrf
                     <input type="hidden" name="edit_id" id="facultyEditId">
-                    <label>Name: <input type="text" name="faculty_name" id="facultyName" required></label>
+                    <label>Name: <input type="text" name="faculty_name" id="facultyname" required></label>
+                    <label>Initial: <input type="text" name="faculty_initial" id="facultyinitial" required></label>
+                    <label>Email: <input type="email" name="faculty_email" id="facultyemail" required></label>
+                    <label>Phone: <input type="number" name="faculty_number" id="facultynumber" required></label>
                     <label>Password: <input type="password" name="facpass" id="facultyPass"></label>
                     <label>Department:
-                        <select name="faculty_department" id="facultyDepartment" required>
+                        <select name="faculty_department" id="facultydepartment" required>
                             <option value="CSE">CSE</option>
                             <option value="CS">CS</option>
                             <option value="EEE">EEE</option>
@@ -359,21 +362,22 @@ $enrollments = \App\Models\Enrollment::all();
                             <option value="ECE">ECE</option>
                         </select>
                     </label>
-                    <button type="submit" class="button">Add/Edit Faculty</button>
+                    <button type="submit" id="fbutton" class="button">Add</button>
                 </form>
                 <table>
-                    <tr><th>ID</th><th>Name</th><th>Department</th><th>Actions</th></tr>
+                    <tr><th>ID</th><th>Name</th><th>Initial</th><th>Department</th><th>Actions</th></tr>
                     <?php foreach ($faculty as $fac): ?>
                         <tr>
-                            <td><?= $fac['id'] ?></td>
-                            <td><?= $fac['name'] ?></td>
-                            <td><?= $fac['department'] ?></td>
+                            <td><?= $fac['u_id'] ?></td>
+                            <td><?= $fac['faculty_name'] ?></td>
+                            <td><?= $fac['faculty_initial'] ?></td>
+                            <td><?= $fac['faculty_department'] ?></td>
                             <td>
                                 <button onclick="editFaculty(<?= htmlspecialchars(json_encode($fac)) ?>)" class="button">Edit</button>
-                                <form method="POST" style="display:inline;">
-                                    <input type="hidden" name="action" value="delete">
-                                    <input type="hidden" name="table" value="faculty">
-                                    <input type="hidden" name="id" value="<?= $fac['id'] ?>">
+                                <form method="POST" action="{{route('faculty_del')}}" style="display:inline;">
+                                    @csrf
+                                    
+                                    <input type="hidden" name="f_del_id" value="<?= $fac['u_id'] ?>">
                                     <button type="submit" class="button" onclick="return confirm('Are you sure you want to delete this faculty member?')">Delete</button>
                                 </form>
                             </td>
@@ -505,11 +509,13 @@ $enrollments = \App\Models\Enrollment::all();
         
 
         function editFaculty(faculty) {
-            $('#facultyEditId').val(faculty.id);
-            $('#facultyName').val(faculty.name);
-            $('#facultyDepartment').val(faculty.department);
-            $('#facultyPass').val('');
-            $('#facultyForm').find('button[type="submit"]').text('Update Faculty');
+            document.getElementById('facultyEditId').value = faculty.u_id;
+            document.getElementById('facultyemail').value = faculty.faculty_email;
+            document.getElementById('facultynumber').value = faculty.faculty_phone;
+            document.getElementById('facultyname').value = faculty.faculty_name;
+            document.getElementById('facultyinitial').value = faculty.faculty_initial;
+            document.getElementById('facultydepartment').value = faculty.faculty_department;
+            document.getElementById('fbutton').innerHTML = 'Update Faculty';
         }
 
         function editCourse(course) {

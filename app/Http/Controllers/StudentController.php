@@ -2,25 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Student; // If you have a Student model
+use App\Models\Student; 
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash; // For password hashing
 
 class StudentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $students = Student::all(); // Fetch all students (adjust as needed)
-        return view('admin', compact('students')); // Return the view with data
+        return view('admin');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -79,7 +72,7 @@ class StudentController extends Controller
         return redirect()->route('student.index')->with('success', 'Student saved successfully!');
     }
 
-    
+
     public function destroy(Request $request)
     {
         $id = $request->input('s_del_id');

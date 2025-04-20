@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('faculty', function (Blueprint $table) {
             $table->string('u_id')->after('faculty_id')->nullable()->default(null);
+            $table->string('faculty_initial')->after('faculty_name')->default(null);
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('faculty', function (Blueprint $table) {
             $table->dropColumn('u_id');
+            $table->dropColumn('faculty_initial');
         });
     }
 };
