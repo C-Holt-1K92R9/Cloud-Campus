@@ -449,9 +449,11 @@ $enrollments = \App\Models\Enrollment::all();
             </div>
 
             <div class="grid" id="ManageEnrollments">
+                
                 <h2>Manage Enrollments</h2>
-                <form method="POST" id="enrollmentForm">
-                    <input type="hidden" name="action" value="assign_remove_student">
+                <form method="POST" action="{{route('enrollment_edit')}}"  id="enrollmentForm">
+                @csrf
+                    <input type="hidden" name="en_edit_id" id="enrollmentEditId">
                     <label>Student:
                         <select name="student_id" required>
                             <?php foreach ($students as $student): ?>
@@ -460,30 +462,27 @@ $enrollments = \App\Models\Enrollment::all();
                         </select>
                     </label>
                     <label>Course:
-                        <select name="course_id" required>
+                        <select name="course_data" required>
                             <?php foreach ($courses as $course): ?>
-                                <option value="<?= $course['id'] ?>"><?= $course['course_code'] ?> (<?= $course['course_section'] ?>)</option>
+                                
+                                <option value="<?= $course['course_id'].",".$course['course_code'].",".$course['course_section'].",".$course['course_instructor'] ?>"><?= $course['course_code'] ?> (<?= $course['course_section'] ?>)</option>
                             <?php endforeach; ?>
                         </select>
                     </label>
-                    <label>
-                        <input type="radio" name="assign_remove" value="assign" checked> Assign
-                        <input type="radio" name="assign_remove" value="remove"> Remove
-                    </label>
-                    <button type="submit" class="button">Manage Enrollment</button>
+                    <button type="submit" class="button">Enroll</button>
                 </form>
                 <table>
-                    <tr><th>ID</th><th>Student</th><th>Course</th><th>Actions</th></tr>
+                    <tr><th>ID</th><th>Student</th><th>Course</th><th>Section</th><th>Actions</th></tr>
                     <?php foreach ($enrollments as $enrollment): ?>
                         <tr>
                             <td><?= $enrollment['id'] ?></td>
-                            <td><?= $enrollment['student_name'] ?></td>
+                            <td><?= $enrollment['student_u_id'] ?></td>
                             <td><?= $enrollment['course_code'] ?></td>
+                            <td><?= $enrollment['course_section'] ?></td>
                             <td>
-                                <form method="POST" style="display:inline;">
-                                    <input type="hidden" name="action" value="delete">
-                                    <input type="hidden" name="table" value="enrollments">
-                                    <input type="hidden" name="id" value="<?= $enrollment['id'] ?>">
+                                <form method="POST" action="{{route('enrollment_del')}}" style="display:inline;">
+                                    @csrf
+                                    <input type="hidden" name="en_del_id" value="<?= $enrollment['id'] ?>">
                                     <button type="submit" class="button" onclick="return confirm('Are you sure you want to remove this enrollment?')">Remove</button>
                                 </form>
                             </td>

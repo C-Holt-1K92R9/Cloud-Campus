@@ -6,6 +6,7 @@ use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash; // For password hashing
+use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller
 {
@@ -46,13 +47,11 @@ class StudentController extends Controller
             }
         } else {
             
-            $lastStudent = Student::orderBy('u_id', 'desc')->first();
-            if ($lastStudent) {
-                $newId = (int) substr($lastStudent->u_id, 1) + 1;
-                $newId = 'S' . strval($newId);
-            } else {
-                $newId = 'S1';
-            }
+            $lastStudentId = DB::table('student')
+                ->select(DB::raw("MAX(CAST(SUBSTRING(u_id, 2) AS UNSIGNED)) as max_id"))
+                ->first()->max_id;
+
+            $newId = 'S' . ($lastStudentId ? $lastStudentId + 1 : 1);
             $student = new Student();
             $user = new User();
             $user->name = $request->input('student_name');

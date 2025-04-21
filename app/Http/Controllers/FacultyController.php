@@ -6,6 +6,7 @@ use App\Models\Faculty;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class FacultyController extends Controller
 {
@@ -38,13 +39,12 @@ class FacultyController extends Controller
         } else {
             
             // Create new faculty member
-            $lastFaculty = Faculty::orderBy('u_id', 'desc')->first();
-            if ($lastFaculty) {
-                $newId = (int) substr($lastFaculty->u_id, 1) + 1;
-                $newId = 'F' . strval($newId);
-            } else {
-                $newId = 'F1';
-            }
+            $lastFacultyId = DB::table('faculty')
+                ->select(DB::raw("MAX(CAST(SUBSTRING(u_id, 2) AS UNSIGNED)) as max_id"))
+                ->first()->max_id;
+
+            $newId = 'F' . ($lastFacultyId ? $lastFacultyId + 1 : 1);
+
             
             $faculty = new Faculty();
             $user = new User();

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string("course_time");
             $table->string('course_days');
             $table->string('course_instructor');
+            $table->text('course_link')->nullable();
             $table->timestamps();
         });
     }

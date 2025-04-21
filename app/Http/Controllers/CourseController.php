@@ -49,6 +49,7 @@ class CourseController extends Controller
         $course->course_section = $request->input('course_section');
         $course->course_time = $request->input('course_time');
         $course->course_days = $request->input('course_days');
+        $course->course_link = "https://meet.jit.si/" . $request->input('course_code') . $request->input('course_section') . bin2hex(random_bytes(10));
         $course->course_instructor = $request->input('course_instructor');
         $course->save();
 

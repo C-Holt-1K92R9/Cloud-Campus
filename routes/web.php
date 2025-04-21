@@ -21,3 +21,7 @@ Route::get('/faculty', [FacultyController::class, 'index'])->name('faculty.index
 Route::post('/course/edit', [CourseController::class, 'store'])->name('course_edit');
 Route::post('/course/del', [CourseController::class, 'destroy'])->name('course_del');
 Route::get('/course', [CourseController::class, 'index'])->name('course.index');
+// For enrollment management
+Route::post('/enrollment/edit', [EnrollmentController::class, 'store'])->name('enrollment_edit');
+Route::post('/enrollment/del', [EnrollmentController::class, 'destroy'])->name('enrollment_del');
+Route::get('/enrollment', [EnrollmentController::class, 'index'])->name('enrollment.index');
