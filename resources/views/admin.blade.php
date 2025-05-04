@@ -4,6 +4,7 @@ $students = \App\Models\Student::all();
 $faculty = \App\Models\Faculty::all();
 $courses = \App\Models\Course::all();
 $enrollments = \App\Models\Enrollment::all();
+
 ?>
 
 <!DOCTYPE html>
@@ -275,9 +276,11 @@ $enrollments = \App\Models\Enrollment::all();
                 <li><b><a class="menus" onclick="opentab('ManageEnrollments')" href="#">Manage Enrollments</a></b></li>
             </ul>
           
-                
-            <a href="/virtual_campus/login.php" class="button_out">Log Out</a>
-            
+            <form action="{{route('logout')}}" method="POST">
+                @csrf
+                <input type="hidden" name="action" value="logout">
+            <button type="submit" class="button_out">Log Out</button>
+            </form>
         </div>
         <div class="content">
             <div id="top" class="header">
