@@ -12,7 +12,7 @@ class StudentController extends Controller
 {
     public function index()
     {
-        return view('admin');
+        return view('admin',['tab'=>'student']);
     }
 
     public function store(Request $request)

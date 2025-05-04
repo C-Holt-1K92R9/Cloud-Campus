@@ -306,7 +306,7 @@ $enrollments = \App\Models\Enrollment::all();
                     <label>Name: <input type="text" name="student_name" id="studentName" required></label>
                     <label>Email: <input type="email" name="student_email" id="studentemail" placeholder="example@example.com" required></label>
                     <label>Phone: <input type="number" name="student_number" placeholder="018546-82005" id="studentnumber" required></label>
-                    <label>Password: <input type="password" name="tpass" id="studentPass"></label>
+                    <label>Password: <input type="password" name="tpass" id="studentPass" ></label>
                     <label>Department:
                         <select name="student_department" id="studentDepartment" required>
                             <option value="CSE">CSE</option>
@@ -495,17 +495,40 @@ $enrollments = \App\Models\Enrollment::all();
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        function opentab(tabname) {
-            const tab = new URLSearchParams(window.location.search).get('tab');
-            if (tab) {
-                document.querySelector('.grid.active').classList.remove('active');
-                document.querySelector('#' + tab).classList.add('active');
-            } else {
-                document.querySelector('.grid.active').classList.remove('active');
-                document.querySelector('#' + tabname).classList.add('active');
-            }
-              
+        
+    const tab = @json($tab ?? 'Dashboard'); // Use Laravel-passed tab or default
+
+    function opentab(tabname) {
+        // Hide currently active tab content
+        const activeGrid = document.querySelector('.grid.active');
+        if (activeGrid) {
+            activeGrid.classList.remove('active');
         }
+
+        // Show selected tab content
+        const selectedTab = document.getElementById(tabname);
+        if (selectedTab) {
+            selectedTab.classList.add('active');
+        }
+
+        // Remove 'active' class from all sidebar menu links
+        document.querySelectorAll('.menus').forEach(menu => {
+            menu.classList.remove('active');
+        });
+
+        // Add 'active' class to clicked link
+        const clickedMenu = document.querySelector(`.menus[onclick*="${tabname}"]`);
+        if (clickedMenu) {
+            clickedMenu.classList.add('active');
+        }
+    }
+
+    // Call the function when the page loads
+    window.onload = function () {
+        opentab("Dashboard");
+    };
+
+
 
         function editCourse(course) {
             document.getElementById('courseEditId').value = course.course_id;

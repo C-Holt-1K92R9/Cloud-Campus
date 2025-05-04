@@ -12,7 +12,7 @@ Route::get('/', function () {
 // For student management
 Route::post('/students/edit', [StudentController::class, 'store'])->name('student_edit');
 Route::post('/students/del', [StudentController::class, 'destroy'])->name('student_del');
-Route::get('/student', [StudentController::class, 'index'])->name('student.index');
+Route::get('/prity', [StudentController::class, 'index'])->name('student.index');
 // For faculty management
 Route::post('/faculty/edit', [FacultyController::class, 'store'])->name('faculty_edit');
 Route::post('/faculty/del', [FacultyController::class, 'destroy'])->name('faculty_del');
