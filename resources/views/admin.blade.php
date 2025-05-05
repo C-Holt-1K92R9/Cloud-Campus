@@ -1,5 +1,6 @@
 <?php
 // Fetch existing data
+use Illuminate\Support\Facades\Session;
 $students = \App\Models\Student::all();
 $faculty = \App\Models\Faculty::all();
 $courses = \App\Models\Course::all();
@@ -278,13 +279,13 @@ $enrollments = \App\Models\Enrollment::all();
           
             <form action="{{route('logout')}}" method="POST">
                 @csrf
-                <input type="hidden" name="action" value="logout">
+                
             <button type="submit" class="button_out">Log Out</button>
             </form>
         </div>
         <div class="content">
             <div id="top" class="header">
-                <h2 class="greeting" >⛅Welcome, Admin</h2>
+                <h2 class="greeting" >⛅Welcome,{{session('user_name')}}</h2>
                 
             </div>
 

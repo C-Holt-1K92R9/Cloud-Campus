@@ -51,3 +51,14 @@ Route::get('/', function () {
 });
 Route::post('/login', [LoginController::class, 'login_auth'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// for faculty pannel
+Route::get('/faculty', function () {
+    if (Session::has('user_type')) {
+        return view("faculty");
+    }
+    else {
+        return redirect('/');
+    }
+    
+});

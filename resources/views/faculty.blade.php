@@ -1,4 +1,7 @@
 <?php
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon; 
 ?>
 
 <!DOCTYPE html>
@@ -373,7 +376,7 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <img src="/virtual_campus/262119406_281296240490710_5576796804703518377_n.png" alt="BRAC University Logo" class="logo">
+            <img src="/logo.png" alt="BRAC University Logo" class="logo">
             <h2 class="virtual-campus"><b>VIRTUAL CAMPUS</b></h2>
             <ul class="menu">
                 <li><b><a class="menus active" onclick="opentab('Dashboard')" href="#">Dashboard</a></b></li>
@@ -382,166 +385,111 @@
                 <li><b><a class="menus" onclick="opentab('Attendance')" href="#">Attendance</a></b></li>
                 <li><b><a class="menus" onclick="opentab('Routine')" href="#">Class Routine</a></b></li>
             </ul>
-            <div>
-                <br><br><br><br><br><br><br><br><br>
-            <a href="/virtual_campus/login.php" class="button_out">Log Out</a>
-            </div>
+            <form action="{{route('logout')}}" method="POST">
+                @csrf
+                
+            <button type="submit" class="button_out">Log Out</button>
+            </form>
         </div>
         <div class="content">
             <div class="header">
-                <h2 class="greeting">⛅Good Afternoon, <?php echo htmlspecialchars($faculty_info['name']); ?></h2>
+                <h2 class="greeting">⛅Good Afternoon, {{session('user_name')}}</h2>
                 
             </div>
             <!--Dashboard-->
             <div class="grid active" id="Dashboard">
                 <div class="dash">
-                <div>
-                    <h2>Live Classes</h2>
-                    <?php if ($live_classes->num_rows > 0): ?>
-                    <?php while ($class = $live_classes->fetch_assoc()): ?>
-                        <div class="card">
-                            <h3><?php echo htmlspecialchars($class['course_code'] . ': ' . $class['course_name']); ?></h3>
-                            <p>Section: <?php echo htmlspecialchars($class['section']); ?></p>
-                            <p><?php echo htmlspecialchars($class['start_time'] . ' | ' . $class['class_days']); ?></p>
-                            <div class="card-footer">
-                                <?php 
-                                // Calculate time difference in minutes
-                                $time_diff_minutes = ceil((strtotime($class['start_time']) - time()) / 60); 
-                                ?>
-                                <p class="status">Status: Starting in <?php echo $time_diff_minutes; ?> minutes</p>
-                                <a href="<?php echo htmlspecialchars($class['join_link']); ?>" class="button">Join Now</a>
-                            </div>
-                        </div>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <p>No upcoming live classes.</p>
-                <?php endif; ?>
+                    <div>
+                        <h2>Live Classes</h2>
+                        {{-- Check if the collection is not empty --}}
+                        @if ($live_classes->isNotEmpty())
+                            {{-- Loop through the collection --}}
+                            @foreach ($live_classes as $class)
+                                <div class="card">
+                                    {{-- Access model properties directly --}}
+                                    <h3>{{ $class->course_code . ': ' . $class->course_name }}</h3>
+                                    <p>Section: {{ $class->section }}</p>
+                                    <p>{{ $class->start_time . ' | ' . $class->class_days }}</p>
+                                    <div class="card-footer">
+                                        <?php
+                                            // Calculate time difference using Carbon for consistency
+                                            $startTime = Carbon::parse($class->start_time); // Assuming start_time is parseable
+                                            $time_diff_minutes = $startTime->diffInMinutes(Carbon::now());
+                                        ?>
+                                        {{-- Display the calculated time difference --}}
+                                        <p class="status">Status: Starting in {{ $time_diff_minutes }} minutes</p>
+                                        {{-- Display the join link --}}
+                                        <a href="{{ $class->course_link }}" class="button">Join Now</a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            {{-- Message if the collection is empty --}}
+                            <p>No upcoming live classes.</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+                <!--a little code was here p1-->
             
-                </div>
-                <div>
-                    <h2>Class Works</h2>
-                    <?php if ($class_works->num_rows > 0): ?>
-                        <?php while ($work = $class_works->fetch_assoc()): ?>
-                            <div class="card">
-                                <h3><?php echo htmlspecialchars($work['title']); ?></h3>
-                                <p><?php echo htmlspecialchars($work['course_code'] . ': ' . $work['course_name']); ?></p>
-                                <p><?php echo htmlspecialchars($work['due_time'] . ' | ' . $work['due_date']); ?></p>
-                                <div class="card-footer">
-                                    <p class="status">Status: Due in <?php echo ceil((strtotime($work['due_date'] . ' ' . $work['due_time']) - time()) / 3600); ?> hours</p>
-                                    <a href="<?php echo htmlspecialchars($work['details_link']); ?>" class="button">View Work</a>
-                                </div>
-                            </div>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <p>No upcoming class works.</p>
-                    <?php endif; ?>
-                </div>
-            </div>
-            </div>
             <!--End Dashboard-->
-            <div class="grid" id="Courses">
-                <h2>Courses Taken This Semester</h2>
-                <div class="course">
-                    <?php while ($course = $courses->fetch_assoc()): ?>
-                        <div>
-                            <div class="flip-card">
-                                <div class="flip-card-inner">
-                                    <div class="flip-card-front">
-                                        <p class="title"><?php echo htmlspecialchars($course['course_code']); ?></p>
-                                    </div>
-                                    <div class="flip-card-back">
-                                        <p class="title">
-                                            <p>Course Details: <?php echo htmlspecialchars($course['course_name']); ?></p>
-                                        </p>
+                <div class="grid" id="Courses">
+                    <h2>Courses Taken This Semester</h2>
+                    <div class="course">
+                        @foreach ($courses as $course)
+                            <div>
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <p class="title">{{ $course->course_code }}</p>
+                                            <br>
+                                            <p class="title">{{ $course->course_name }}</p>
+                                        </div>
+                                        <div class="flip-card-back">
+                                            <p class="title">
+                                                <p>Course Details: {{ $course->course_description }}</p>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    <?php endwhile; ?>
-                </div>     
-            </div>
-            <!--End of Courses-->
-            <!--Start of attendance -->
-            <div class="grid" id="Attendance">
-                <h2>Attendance</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Course Code</th>
-                                <th>Course Name</th>
-                                <th>Section</th>
-                                <th>Date</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php while ($class = $all_classes->fetch_assoc()): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($class['course_code']); ?></td>
-                                <td><?php echo htmlspecialchars($class['course_name']); ?></td>
-                                <td><?php echo htmlspecialchars($class['section']); ?></td>
-                                
-                                <!-- Get the current day of the week -->
-                                <td>
-                                    <?php
-                                        // Get current day of the week
-                                        $current_day = date('l'); // 'l' returns full day name, e.g., Monday
-
-                                        // Check if today matches one of the class days
-                                        $class_days = explode(',', $class['class_days']); // Assuming days are stored as 'Monday,Wednesday'
-                                        if (in_array($current_day, $class_days)) {
-                                            echo 'Class Today (' . $current_day . ')';
-                                        } else {
-                                            echo 'No Class Today';
-                                        }
-                                    ?>
-                                </td>
-                                
-                                <td>
-                                    <button class="button" onclick="viewAttendance(<?php echo $class['id']; ?>)">View Attendance</button>
-                                </td>
-                            </tr>
-                        <?php endwhile; ?>
-
-                        </tbody>
-                    </table>
+                        @endforeach
+                    </div>
                 </div>
-            </div>
-            <!--End of attendance -->
+            <!--End of Courses-->
+           
             <!--Start of routine -->
             <div class="grid" id="Routine">
                 <h2>Class Routine</h2>
                 <div class="Top row">
                     <div class="routine-container">
-                        <?php
-                        $days = ['Time', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                        foreach ($days as $day) {
-                            echo "<div class='routine-table'><p>{$day}</p></div>";
-                        }
-                        
-                        $routine = [];
-                        while ($class = $class_routine->fetch_assoc()) {
-                            $time_slot = date('H:i', strtotime($class['start_time'])) . ' - ' . date('H:i', strtotime($class['end_time']));
-                            $routine[$time_slot][$class['class_days']] = $class;
-                        }
-                        
-                        foreach ($routine as $time_slot => $classes) {
-                            echo "<div class='routine-table'><p>{$time_slot}</p></div>";
-                            foreach ($days as $day) {
-                                if ($day !== 'Time') {
-                                    if (isset($classes[$day])) {
-                                        $class = $classes[$day];
-                                        echo "<div class='routine-table'>";
-                                        echo "<p>{$class['course_code']}<br>{$class['section']}</p>";
-                                        echo "</div>";
-                                    } else {
-                                        echo "<div class='routine-table'><p>-</p></div>";
-                                    }
-                                }
-                            }
-                        }
-                        ?>
+                        {{-- Render Days Header --}}
+                        @foreach ($days as $day)
+                            <div class='routine-table'><p>{{ $day }}</p></div>
+                        @endforeach
+
+                        {{-- Render Routine Rows --}}
+                        @foreach ($routine as $time_slot => $classes)
+                            {{-- Time Slot Cell --}}
+                            <div class='routine-table'><p>{{ $time_slot }}</p></div>
+
+                            {{-- Class Cells for Each Day --}}
+                            @foreach ($days as $day)
+                                {{-- Skip the 'Time' header cell --}}
+                                @if ($day !== 'Time')
+                                    <div class='routine-table'>
+                                        {{-- Check if there's a class for this time slot and day --}}
+                                        @isset($classes[$day])
+                                            {{-- Access class properties from the model object --}}
+                                            <p>{{ $classes[$day]->course_code }}<br>{{ $classes[$day]->section }}</p>
+                                        @else
+                                            {{-- Display placeholder if no class --}}
+                                            <p>-</p>
+                                        @endisset
+                                    </div>
+                                @endif
+                            @endforeach
+                        @endforeach
                     </div>
                 </div>
             </div>
