@@ -2,6 +2,34 @@
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon; 
+use App\Models\User;
+use App\Models\Course;
+
+$classes = Course::where('u_id', session('user_id'))->get(); 
+
+$days = ['Time', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+$routine = [];
+foreach ($classes as $class) {
+    $startTime = Carbon::parse($class->start_time)->format('H:i');
+    $endTime = Carbon::parse($class->end_time)->format('H:i');
+    $time_slot = $startTime . ' - ' . $endTime;
+    $routine[$time_slot][$class->class_days] = $class;
+}
+$courses = Course::where('u_id', session('user_id'))->get();
+$today = date('l');
+
+$live_classes = Course::where('course_days', 'like', '%' . $today . '%')
+                    ->where('u_id', session('user_id')) // Add this condition
+                    ->get();
+foreach ($live_classes as $temp){
+    if ($temp->status =='Cancelled'){
+        $passed_time = Carbon::parse($temp->updated_at)->diffInHours(Carbon::now());
+        if ($passed_time >= 24) {
+            $temp->status = 'Online';
+            $temp->save();
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -312,17 +340,7 @@ use Carbon\Carbon;
             background-color: #f2f2f2;
             color: #333;
         }
-        .attendance-modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-        }
+        
         .modal-content {
             background-color: #fefefe;
             margin: 15% auto;
@@ -382,7 +400,6 @@ use Carbon\Carbon;
                 <li><b><a class="menus active" onclick="opentab('Dashboard')" href="#">Dashboard</a></b></li>
                 <li><a class="menus" href="assign_class_work.php">Assign Class Work</a></li>
                 <li><b><a class="menus" onclick="opentab('Courses')" href="#">Courses</a></b></li>
-                <li><b><a class="menus" onclick="opentab('Attendance')" href="#">Attendance</a></b></li>
                 <li><b><a class="menus" onclick="opentab('Routine')" href="#">Class Routine</a></b></li>
             </ul>
             <form action="{{route('logout')}}" method="POST">
@@ -401,24 +418,25 @@ use Carbon\Carbon;
                 <div class="dash">
                     <div>
                         <h2>Live Classes</h2>
-                        {{-- Check if the collection is not empty --}}
+                   
                         @if ($live_classes->isNotEmpty())
-                            {{-- Loop through the collection --}}
+                           
                             @foreach ($live_classes as $class)
                                 <div class="card">
-                                    {{-- Access model properties directly --}}
+                                   
                                     <h3>{{ $class->course_code . ': ' . $class->course_name }}</h3>
-                                    <p>Section: {{ $class->section }}</p>
-                                    <p>{{ $class->start_time . ' | ' . $class->class_days }}</p>
-                                    <div class="card-footer">
-                                        <?php
-                                            // Calculate time difference using Carbon for consistency
-                                            $startTime = Carbon::parse($class->start_time); // Assuming start_time is parseable
-                                            $time_diff_minutes = $startTime->diffInMinutes(Carbon::now());
-                                        ?>
+                                    <p>Section: {{ $class->course_section }}</p>
+                                    <p>{{ $class->course_time . ' | ' . $class->course_days }}</p>
+                                    <div class="card-footer">                                        
                                         {{-- Display the calculated time difference --}}
-                                        <p class="status">Status: Starting in {{ $time_diff_minutes }} minutes</p>
+                                        <p class="status">Status: {{$class->status}}</p>
                                         {{-- Display the join link --}}
+                                        <form action="{{route('cancel_class')}}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="class_id" value="{{ $class->course_id }}">
+                                            <button type="submit" class="button">Cancel</button>
+                                        </form>
+                                        
                                         <a href="{{ $class->course_link }}" class="button">Join Now</a>
                                     </div>
                                 </div>
@@ -497,14 +515,6 @@ use Carbon\Carbon;
         </div> <!--This is the whole body part-->
     </div>
     
-    <!-- Attendance Modal -->
-    <div id="attendanceModal" class="attendance-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Attendance</h2>
-            <div id="attendanceContent"></div>
-        </div>
-    </div>
 
     <script>
         var menust = document.getElementsByClassName("menus");
@@ -520,18 +530,11 @@ use Carbon\Carbon;
             document.getElementById(tabname).classList.add("active");
         }
 
-        // Attendance modal functionality
-        var modal = document.getElementById("attendanceModal");
+   
+      
         var span = document.getElementsByClassName("close")[0];
 
-        function viewAttendance(classId) {
-            fetch('get_attendance.php?class_id=' + classId)
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById("attendanceContent").innerHTML = data;
-                    modal.style.display = "block";
-                });
-        }
+        
 
         span.onclick = function() {
             modal.style.display = "none";

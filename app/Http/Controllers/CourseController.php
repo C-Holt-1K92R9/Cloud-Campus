@@ -38,7 +38,7 @@ class CourseController extends Controller
                 $course->course_days = $request->input('course_days');
                 $course->course_instructor = $request->input('course_instructor');
                 $course->save();
-                return redirect()->route('course.index')->with('success', 'Course updated successfully!');
+                return view('admin');
     
         }
         else{
@@ -53,7 +53,7 @@ class CourseController extends Controller
         $course->course_instructor = $request->input('course_instructor');
         $course->save();
 
-        return redirect()->route('course.index')->with('success', 'Course created successfully!');
+        return view('admin');
     }
 }
 
@@ -65,6 +65,18 @@ class CourseController extends Controller
             $course->delete();
         }
         
-        return redirect()->route('course.index')->with('success', 'Course deleted successfully!');
+        return view('admin');
     }
+    public function cancel_class(Request $request)
+    {
+        $id = $request->input('class_id');
+        $course = Course::where('course_id',(int)$id)->first();
+        if ($course) {
+            $course->status= 'Cancelled';
+        }
+        $course->save();
+  
+        return view('faculty');
+}
+
 }

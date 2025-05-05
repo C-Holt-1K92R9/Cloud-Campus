@@ -28,7 +28,6 @@ Route::get('/admin', [FacultyController::class, 'index'])->name('faculty.index')
 // For course management
 Route::post('/course/edit', [CourseController::class, 'store'])->name('course_edit');
 Route::post('/course/del', [CourseController::class, 'destroy'])->name('course_del');
-Route::get('/admin', [CourseController::class, 'index'])->name('course.index');
 // For enrollment management
 Route::post('/enrollment/edit', [EnrollmentController::class, 'store'])->name('enrollment_edit');
 Route::post('/enrollment/del', [EnrollmentController::class, 'destroy'])->name('enrollment_del');
@@ -49,10 +48,13 @@ Route::get('/', function () {
     }
     return view('login');
 });
+
 Route::post('/login', [LoginController::class, 'login_auth'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // for faculty pannel
+Route::post('/class/cancel', [CourseController::class, 'cancel_class'])->name('cancel_class');
+
 Route::get('/faculty', function () {
     if (Session::has('user_type')) {
         return view("faculty");
