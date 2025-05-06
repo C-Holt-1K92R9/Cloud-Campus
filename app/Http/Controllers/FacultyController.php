@@ -15,7 +15,7 @@ class FacultyController extends Controller
     public function store(Request $request)
     {
         if ($request->input('edit_id')) {
-            // Update existing faculty
+         
             $faculty = Faculty::where('u_id', $request->input('edit_id'))->first();
             $user= User::where('u_id', $request->input('edit_id'))->first();
 
@@ -48,7 +48,7 @@ class FacultyController extends Controller
             $user->name = $request->input('faculty_name');
             $user->email = $request->input('faculty_email');
             $user->password = Hash::make($request->input('tpass'));
-            $user->type = 'faculty'; // Set the role to 'faculty'
+            $user->type = 'faculty';
             $user->save();
 
             $faculty->u_id = $newId;

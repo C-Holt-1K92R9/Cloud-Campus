@@ -17,10 +17,7 @@ class EnrollmentController extends Controller
     public function store(Request $request)
     {
         $enrollment = new Enrollment();
-        //"<?= $course['course_id'].",".$course['course_id'].",".$course['course_section'].",".$course['course_instructor']"
-        // Create new faculty member
-        
-
+    
         $lastId = DB::table('enrollment')
             ->select(DB::raw("MAX(CAST(SUBSTRING(id, 2) AS UNSIGNED)) as max_id"))
             ->first()->max_id;

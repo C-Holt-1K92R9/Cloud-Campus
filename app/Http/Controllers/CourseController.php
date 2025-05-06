@@ -14,7 +14,7 @@ class CourseController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the request data
+        
         $request->validate([
             'course_code' => 'required|string|max:255',
             'course_name' => 'required|string|max:255',
@@ -26,7 +26,7 @@ class CourseController extends Controller
         ]);
 
         if($request->input('edit_id')){
-            // Update existing course
+            
             $course = Course::find($request->input('edit_id'));
                 $course->course_code = $request->input('course_code');
                 $course->course_name = $request->input('course_name');

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
-use App\Models\Course; // Assuming Course model is used for routine
+use App\Models\Course; 
 use Carbon\Carbon; 
 class LoginController extends Controller
 {
