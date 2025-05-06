@@ -16,20 +16,7 @@ class LoginController extends Controller
             Session::put('user_id', $user->u_id);
             Session::put('user_name', $user->name);
             Session::put('user_type', $user->type);
-            
-            $type=$user->type;
-            if ($type=="admin"){
-            return redirect('/admin'); 
-            }
-            else if ($type=="student"){
-                return redirect('/student'); 
-            } 
-            else if ($type=="faculty"){
-                
-                return view('/faculty');
-                
-            } 
-            
+            return redirect()->route('redirect');           
         } 
         
         else {
@@ -37,7 +24,7 @@ class LoginController extends Controller
         }
 }
 public function logout(Request $request) {
-    Session::flush(); // Clear all session data
-    return redirect('/'); // Redirect to the login page
+    Session::flush(); 
+    return redirect()->route('redirect'); 
 }
 }
