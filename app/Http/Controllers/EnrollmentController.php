@@ -35,7 +35,7 @@ class EnrollmentController extends Controller
         $enrollment->course_section = trim($array[2]);
         $enrollment->faculty_initial= trim($array[3]);
         $enrollment->save();
-        return redirect()->route('enrollment.index')->with('success', 'Enrollment created successfully!');
+        return redirect()->route('redirect');
     }
 
     public function destroy(Request $request)
@@ -43,6 +43,6 @@ class EnrollmentController extends Controller
         $enrollment = Enrollment::where('id',$request->input('en_del_id'));
         
         $enrollment->delete();
-        return redirect()->route('enrollment.index')->with('success', 'Enrollment deleted successfully!');
+        return redirect()->route('redirect');
     }
 }

@@ -10,10 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller
 {
-    public function index()
-    {
-        return view('admin',['tab'=>'student']);
-    }
 
     public function store(Request $request)
     {
@@ -68,7 +64,8 @@ class StudentController extends Controller
             $student->save();
         }
 
-        return redirect()->route('student.index')->with('success', 'Student saved successfully!');
+ 
+        return redirect()->route('redirect');
     }
 
 
@@ -80,6 +77,7 @@ class StudentController extends Controller
         $student->delete();
         $user_student->delete();
 
-        return redirect()->route('student.index')->with('success', 'Student deleted successfully!');
+
+        return redirect()->route('redirect');
     }
 }

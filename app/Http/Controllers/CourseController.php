@@ -9,10 +9,8 @@ use App\Models\Course;
 
 class CourseController extends Controller
 {
-    public function index()
-    {
-        return view('admin');
-    }
+    
+    
 
     public function store(Request $request)
     {
@@ -36,7 +34,9 @@ class CourseController extends Controller
                 $course->course_section = $request->input('course_section');
                 $course->course_time = $request->input('course_time');
                 $course->course_days = $request->input('course_days');
-                $course->course_instructor = $request->input('course_instructor');
+                $arr= array_map('trim', explode(',', $request->input('course_instructor')));
+                $course->course_instructor =$arr[0] ;
+                $course->u_id= $arr[1];
                 $course->save();
                 return view('admin');
     
@@ -50,10 +50,12 @@ class CourseController extends Controller
         $course->course_time = $request->input('course_time');
         $course->course_days = $request->input('course_days');
         $course->course_link = "https://meet.jit.si/" . $request->input('course_code') . $request->input('course_section') . bin2hex(random_bytes(10));
-        $course->course_instructor = $request->input('course_instructor');
+        $arr= array_map('trim', explode(',', $request->input('course_instructor')));
+        $course->course_instructor =$arr[0] ;
+        $course->u_id= $arr[1];
         $course->save();
 
-        return view('admin');
+        return redirect()->route('redirect');
     }
 }
 
@@ -65,7 +67,7 @@ class CourseController extends Controller
             $course->delete();
         }
         
-        return view('admin');
+        return redirect()->route('redirect');
     }
     public function cancel_class(Request $request)
     {
@@ -76,7 +78,7 @@ class CourseController extends Controller
         }
         $course->save();
   
-        return view('faculty');
+        return redirect()->route('redirect');
 }
 
 }

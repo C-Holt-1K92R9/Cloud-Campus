@@ -10,11 +10,11 @@ $classes = Course::where('u_id', session('user_id'))->get();
 $days = ['Time', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 $routine = [];
 foreach ($classes as $class) {
-    $startTime = Carbon::parse($class->start_time)->format('H:i');
-    $endTime = Carbon::parse($class->end_time)->format('H:i');
-    $time_slot = $startTime . ' - ' . $endTime;
-    $routine[$time_slot][$class->class_days] = $class;
-}
+    $time_slot = $class->course_time; 
+    $class_days_array = array_map('trim', explode(',', $class->course_days));
+    foreach ($class_days_array as $day) {
+        $routine[$time_slot][$day] = $class; 
+    }}
 $courses = Course::where('u_id', session('user_id'))->get();
 $today = date('l');
 

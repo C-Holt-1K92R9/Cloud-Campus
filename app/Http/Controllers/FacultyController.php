@@ -8,17 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-if (!Session::has('type')) {
-    return view('/'); 
-}
 class FacultyController extends Controller
 {
     
-    public function index()
-    {   
-        $faculty= faculty::all(); // Fetch all faculty members (adjust as needed)
-        return view('admin', compact('faculty')); // Return the view with data
-    }
 
     public function store(Request $request)
     {
@@ -67,7 +59,7 @@ class FacultyController extends Controller
             $faculty->faculty_department = $request->input('faculty_department');
             $faculty->save();
         }
-        return redirect()->route('faculty.index')->with('success', 'Faculty saved successfully!');
+        return redirect()->route('redirect');
     }
 
     public function destroy(Request $request)
@@ -82,7 +74,7 @@ class FacultyController extends Controller
             $user_faculty->delete();
         }
         
-        return redirect()->route('faculty.index')->with('success', 'Faculty deleted successfully!');
+        return redirect()->route('redirect');
         
     }
 }

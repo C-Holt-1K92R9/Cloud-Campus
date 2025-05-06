@@ -403,7 +403,7 @@ $enrollments = \App\Models\Enrollment::all();
                     <label>Faculty:
                         <select name="course_instructor" id="courseFaculty" required>
                             <?php foreach ($faculty as $fac): ?>
-                                <option value="<?= $fac['faculty_initial'] ?>"><?= $fac['faculty_initial']." : ".$fac['faculty_name'] ?></option>
+                                <option value="<?= $fac['faculty_initial'].",".$fac['u_id'] ?>"><?= $fac['faculty_initial']." : ".$fac['faculty_name'] ?></option>
                             <?php endforeach; ?>
                         </select>
                     </label>
