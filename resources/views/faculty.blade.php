@@ -5,22 +5,25 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Course;
 
-$classes = Course::where('u_id', session('user_id'))->get(); 
+$courses = Course::where('u_id', session('user_id'))->get();
 
 $days = ['Time', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 $routine = [];
-foreach ($classes as $class) {
+foreach ($courses as $class) {
     $time_slot = $class->course_time; 
     $class_days_array = array_map('trim', explode(',', $class->course_days));
     foreach ($class_days_array as $day) {
         $routine[$time_slot][$day] = $class; 
     }}
-$courses = Course::where('u_id', session('user_id'))->get();
+
 $today = date('l');
 
+
 $live_classes = Course::where('course_days', 'like', '%' . $today . '%')
-                    ->where('u_id', session('user_id')) // Add this condition
+                    ->where('u_id', session('user_id')) 
                     ->get();
+
+
 foreach ($live_classes as $temp){
     if ($temp->status =='Cancelled'){
         $passed_time = Carbon::parse($temp->updated_at)->diffInHours(Carbon::now());

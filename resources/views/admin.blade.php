@@ -410,7 +410,7 @@ $enrollments = \App\Models\Enrollment::all();
                     <label>Class Days:
                         <select name="course_days" id="classDays" required>
                             <option value="Thursday, Saturday">Thursday, Saturday</option>
-                            <option value="sunday, Tuesday">sunday, Tuesday</option>
+                            <option value="sunday, Tuesday">Sunday, Tuesday</option>
                             <option value="Monday, Wednesday">Monday, Wednesday</option>  
                         </select>
                     </label>
