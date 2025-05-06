@@ -83,3 +83,10 @@ class StudentController extends Controller
         return redirect()->route('student.index')->with('success', 'Student deleted successfully!');
     }
 }
+
+
+
+
+
+
+
