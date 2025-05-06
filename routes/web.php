@@ -25,3 +25,18 @@ Route::get('/course', [CourseController::class, 'index'])->name('course.index');
 Route::post('/enrollment/edit', [EnrollmentController::class, 'store'])->name('enrollment_edit');
 Route::post('/enrollment/del', [EnrollmentController::class, 'destroy'])->name('enrollment_del');
 Route::get('/enrollment', [EnrollmentController::class, 'index'])->name('enrollment.index');
+
+
+// For Course Selection
+
+// routes/web.php
+Route::middleware(['auth'])->group(function () {
+    Route::get('/students/{student}/courses', [CourseSelectionController::class, 'index'])
+        ->name('course-selection.index');
+    
+    Route::post('/students/{student}/sections/{section}/enroll', [CourseSelectionController::class, 'enroll'])
+        ->name('course-selection.enroll');
+    
+    Route::delete('/students/{student}/enrollments/{enrollment}', [CourseSelectionController::class, 'drop'])
+        ->name('course-selection.drop');
+});
