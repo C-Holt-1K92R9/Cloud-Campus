@@ -29,7 +29,7 @@ class StudentController extends Controller
 
             $user -> name = $request->input('student_name');
             $user -> email = $request->input('student_email');
-
+            
             $student->student_name = $request->input('student_name');
             $student->student_email = $request->input('student_email');
             $student->student_phone = $request->input('student_number');
@@ -39,8 +39,9 @@ class StudentController extends Controller
             if ($request->input('tpass')) {
                 
                 $user->password = Hash::make($request->input('tpass'));
-                $user->save();
+              
             }
+            $user->save();
         } else {
             
             $lastStudentId = DB::table('student')

@@ -423,7 +423,7 @@ foreach ($live_classes as $temp){
             overflow: auto;
             background-color: rgb(0,0,0);
             backdrop-filter: blur(10px);
-            background-color: rgba(0,0,0,0.75);
+            background-color: rgba(0,0,0,0.5);
             padding-top: 60px;
         }
     </style>
