@@ -6,7 +6,8 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Session;
-
+use APP\Http\Models\Enrollment;
+use Illuminate\Http\Request;
 Route::get('/admin', function () {
     if (Session::has('user_type')) {
         return view("admin");
@@ -65,3 +66,5 @@ Route::get('/faculty', function () {
     }
     
 });
+
+Route::post('/add/work',[CourseController::class,'add_work'])->name('add_edit_class_work');

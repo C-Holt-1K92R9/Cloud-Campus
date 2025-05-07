@@ -1,9 +1,12 @@
 <?php
 use Illuminate\Support\Facades\Session;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon; 
 use App\Models\User;
 use App\Models\Course;
+use App\Models\Enrollment;
 
 $courses = Course::where('u_id', session('user_id'))->get();
 
@@ -16,7 +19,7 @@ foreach ($courses as $class) {
         $routine[$time_slot][$day] = $class; 
     }}
 
-$today = date('l');
+$today = Carbon::now('Asia/Dhaka')->format('l');
 
 
 $live_classes = Course::where('course_days', 'like', '%' . $today . '%')
@@ -178,6 +181,21 @@ foreach ($live_classes as $temp){
             animation: neon 1s ease infinite;
             -moz-animation: neon 1s ease infinite;
             -webkit-animation: neon 1s ease infinite;
+        }
+        form input[type="text"],
+        form input[type="password"],
+        form input[type="email"],
+        form input[type="number"],
+        form input[type="date"],
+        form input[type="file"],
+        form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #2c2c2c;
+            background-color: #171717;
+            color: #fff;
         }
         @keyframes neon {
             100% {
@@ -392,6 +410,22 @@ foreach ($live_classes as $temp){
                     0 0 4em 2em var(--glow-spread-color),
                     inset 0 0 .75em .25em var(--glow-color);
         }
+        .assignment_status{
+            
+            padding: 20px;
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            backdrop-filter: blur(10px);
+            background-color: rgba(0,0,0,0.75);
+            padding-top: 60px;
+        }
     </style>
 </head>
 <body>
@@ -401,7 +435,7 @@ foreach ($live_classes as $temp){
             <h2 class="virtual-campus"><b>VIRTUAL CAMPUS</b></h2>
             <ul class="menu">
                 <li><b><a class="menus active" onclick="opentab('Dashboard')" href="#">Dashboard</a></b></li>
-                <li><a class="menus" href="assign_class_work.php">Assign Class Work</a></li>
+                <li><b><a class="menus active" onclick="opentab('Assignment')" href="#">Assign Class Work</a></b></li>
                 <li><b><a class="menus" onclick="opentab('Courses')" href="#">Courses</a></b></li>
                 <li><b><a class="menus" onclick="opentab('Routine')" href="#">Class Routine</a></b></li>
             </ul>
@@ -452,7 +486,51 @@ foreach ($live_classes as $temp){
                 </div>
             </div>
                 <!--a little code was here p1-->
-            
+            <div class="grid" id="Assignment">
+                <h2>Assign a Work to a CLass</h2>
+                <form action="{{route('add_edit_class_work')}}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <label>Course/Section:
+                        <select name="class_id" id="classID" >
+                        @foreach ($courses as $course)
+                            <option value="{{$course->course_id}}">{{$course->course_code}} ({{$course->course_section}})</option>
+                        @endforeach    
+                        </select>
+                </label>
+                <input type="file" name="class_work" required>
+                
+                <input type="date" name="work_due_date" placeholder="Due Date" required><br><br>
+                <button type="submit" class="button">Assign Work</button>
+                </form>
+                <h2>All Assigned Class Works</h2>
+                <div class="table-container" style="scrollbar-width: thin; overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Course Code</th>
+                                <th>Course Name</th>
+                                <th>Class Work</th>
+                                <th>Due Date</th>
+                                <th>Submission Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($courses as $course)
+                                
+                                    <tr>
+                                        <td>{{ $course->course_code }} ({{$course->course_section}})</td>
+                                        <td>{{ $course->course_name }}</td>
+                                        <td>{{ $course->class_work }}</td>
+                                        <td>{{ $course->work_due_date }}</td>
+                                        <td><button onclick="open_status('{{ $course->course_code . $course->course_section }}')" type="submit" class="button" style=" padding: .5em 1.5em;">View</button></td>
+                                    </tr>
+                                    
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                
+                </div>
             <!--End Dashboard-->
                 <div class="grid" id="Courses">
                     <h2>Courses Taken This Semester</h2>
@@ -502,7 +580,7 @@ foreach ($live_classes as $temp){
                                         {{-- Check if there's a class for this time slot and day --}}
                                         @isset($classes[$day])
                                             {{-- Access class properties from the model object --}}
-                                            <p>{{ $classes[$day]->course_code }}<br>{{ $classes[$day]->section }}</p>
+                                            <p>{{ $classes[$day]->course_code }}<br>({{ $classes[$day]->course_section }})</p>
                                         @else
                                             {{-- Display placeholder if no class --}}
                                             <p>-</p>
@@ -517,9 +595,64 @@ foreach ($live_classes as $temp){
             <!--End of routine-->
         </div> <!--This is the whole body part-->
     </div>
-    
+<!--End of container-->
+<!--Start of assignment status-->
+@foreach ($courses as $course)
+<div class="assignment_status" id="{{$course->course_code . $course->course_section}}">
+    <h2>Assignment Status</h2> 
+    <button class="button_out" style="left:90%x;" onclick="close_stat('{{$course->course_code . $course->course_section}}')">close</button>
+    <div class="table-container" style="scrollbar-width: thin; overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Student name</th>
+                    <th>Status</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                    $students=Enrollment::where('course_id', $course->course_id)->get();
+                ?>
+                @foreach ($students as $student)
+                    
+                        <tr>
+                            <td>{{ $student->student_u_id }}</td>
+                            <?php 
+                            $name=User::where('u_id', $student->student_u_id)->first();
 
+                            ?>
+                            <td>{{ $name->name }}</td>
+                            <td>
+                                <?php 
+                                    $status=Course::where('class_work_link','like', '%' . $name->u_id . '%')->where('course_id',$course->course_id)->first();
+                                ?>
+                                @if (!empty($status))
+                                    Submitted
+                                @else
+                                    Not Submitted
+                                @endif
+                            </td>
+                            
+                            
+                        </tr>
+                    
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+@endforeach
     <script>
+        function close_stat(tabname) {
+            var modal = document.getElementById(tabname);
+            modal.style.display = "none";
+        }
+        function open_status(tabname) {
+            var modal = document.getElementById(tabname);
+            modal.style.display = "block";
+        }
         var menust = document.getElementsByClassName("menus");
         var pannels = document.getElementsByClassName("grid");
         function opentab(tabname) {

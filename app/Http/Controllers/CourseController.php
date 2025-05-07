@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Course;
-
+use Illuminate\Support\Facades\Storage;
 
 class CourseController extends Controller
 {
@@ -79,6 +79,38 @@ class CourseController extends Controller
         $course->save();
   
         return redirect()->route('redirect');
+}
+public function add_work(Request $request)
+{
+    $id = $request->input('class_id');
+    $course = Course::where('course_id',(int)$id)->first();
+    
+    
+    if ($course) {
+        $work_file = $request->file('class_work');
+        $folderName = $course->course_code . '_' . $course->course_section;
+
+        
+
+        $disk = Storage::disk('public'); 
+        $folderPath = 'Assignments/' . $folderName."/work";
+
+
+        $files = $disk->files($folderPath);
+
+        if (!empty($files)) {
+          
+            $disk->delete($files);
+        }
+        
+        $path = $work_file->storeAs('Assignments/' . $folderName."/work", $work_file->getClientOriginalName(), 'public');
+        $course->class_work= $work_file->getClientOriginalName();
+        $course->work_due_date= $request->input('work_due_date');
+        
+    }
+    $course->save();
+
+    return redirect()->route('redirect');
 }
 
 }
