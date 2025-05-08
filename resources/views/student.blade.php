@@ -416,7 +416,7 @@ foreach ($live_classes as $temp){
             <ul class="menu">
                 <li><b><a class="menus active" onclick="opentab('Dashboard')" href="#">Dashboard</a></b></li>
                 <li><b><a class="menus" onclick="opentab('Courses')" href="#">Courses</a></b></li>
-                <li><b><a class="menus active" onclick="opentab('Assignment')" href="#">Assign Class Work</a></b></li>
+                <li><b><a class="menus active" onclick="opentab('Assignment')" href="#">Class Work</a></b></li>
                 <li><b><a class="menus" onclick="opentab('Routine')" href="#">Class Routine</a></b></li>
             </ul>
             <div>
