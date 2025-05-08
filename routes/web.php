@@ -93,3 +93,4 @@ Route::get('/download', function (Request $request) {
 
 })->name('download_assignment');
 route::post('upload',[CourseController::class,'upload_work'])->name('upload_work');
+Route::get('/download-all-assignment', [CourseController::class, 'downloadAllSubmissions'])->name('download_all_assignment');

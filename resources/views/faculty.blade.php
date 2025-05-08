@@ -512,6 +512,7 @@ foreach ($live_classes as $temp){
                                 <th>Class Work</th>
                                 <th>Due Date</th>
                                 <th>Submission Status</th>
+                                <th>Download Submissions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -523,6 +524,12 @@ foreach ($live_classes as $temp){
                                         <td>{{ $course->class_work }}</td>
                                         <td>{{ $course->work_due_date }}</td>
                                         <td><button onclick="open_status('{{ $course->course_code . $course->course_section }}')" type="submit" class="button" style=" padding: .5em 1.5em;">View</button></td>
+                                        <form action="{{route('download_all_assignment')}}" method="GET">
+                                            @csrf
+                                            <input type="hidden" name="file" value="Assignments/{{ $course->course_code }}_{{ $course->course_section}}/submission">
+                                            
+                                        <td><button type="submit" class="button" style=" padding: .5em 1.5em;">Download</button></td>
+                                        </form>
                                     </tr>
                                     
                             @endforeach
@@ -629,9 +636,9 @@ foreach ($live_classes as $temp){
                                     $status=Course::where('class_work_link','like', '%' . $name->u_id . '%')->where('course_id',$course->course_id)->first();
                                 ?>
                                 @if (!empty($status))
-                                    Submitted
+                                    <span style="color:green;">Submitted</span>
                                 @else
-                                    Not Submitted
+                                    <span style="color:red;">Not Submitted</span>
                                 @endif
                             </td>
                             

@@ -478,6 +478,7 @@ foreach ($live_classes as $temp){
                                 <th>Download</th>
                                 <th>Add Work</th>
                                 <th>Status</th>
+                                
                             </tr>
                         </thead>
                         <tbody>
