@@ -68,3 +68,11 @@ Route::get('/faculty', function () {
 });
 
 Route::post('/add/work',[CourseController::class,'add_work'])->name('add_edit_class_work');
+Route::get('/student',function(){
+    if (Session::has('user_type')) {
+        return view("student");
+    }
+    else {
+        return redirect('/');
+    }
+});
