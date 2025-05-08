@@ -89,28 +89,38 @@ public function add_work(Request $request)
     if ($course) {
         $work_file = $request->file('class_work');
         $folderName = $course->course_code . '_' . $course->course_section;
-
-        
-
         $disk = Storage::disk('public'); 
         $folderPath = 'Assignments/' . $folderName."/work";
-
-
         $files = $disk->files($folderPath);
-
-        if (!empty($files)) {
-          
+        if (!empty($files)) {   
             $disk->delete($files);
         }
-        
         $path = $work_file->storeAs('Assignments/' . $folderName."/work", $work_file->getClientOriginalName(), 'public');
         $course->class_work= $work_file->getClientOriginalName();
         $course->work_due_date= $request->input('work_due_date');
-        
     }
     $course->save();
-
     return redirect()->route('redirect');
 }
-
+public function upload_work(Request $request)
+{
+    $id = $request->input('course_id');
+    $student_id = $request->input('student_id');
+    $student_name = $request->input('student_name');
+    $course = Course::where('course_id',(int)$id)->first();
+    
+    
+    if ($course) {
+        $work_file = $request->file('submition_file');
+        $folderName = $course->course_code . '_' . $course->course_section;
+        $disk = Storage::disk('public'); 
+        $folderPath = 'Assignments/' . $folderName."/submission";
+        $path = $work_file->storeAs($folderPath, $student_id."_".$student_name.".pdf", 'public');
+        $submitted=$course->class_work_link;
+        $submitted= $submitted.",".$student_id;
+        $course->class_work_link= $submitted;
+    }
+    $course->save();
+    return redirect()->route('redirect');
+}
 }

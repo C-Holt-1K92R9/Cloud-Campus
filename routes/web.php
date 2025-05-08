@@ -8,6 +8,7 @@ use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Session;
 use APP\Http\Models\Enrollment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 Route::get('/admin', function () {
     if (Session::has('user_type')) {
         return view("admin");
@@ -76,3 +77,19 @@ Route::get('/student',function(){
         return redirect('/');
     }
 });
+Route::get('/download', function (Request $request) {
+    $filePath = $request->input('file');
+ 
+    if (Storage::disk('public')->exists($filePath)) {
+        
+         return Storage::disk('public')->download(
+             $filePath, 
+             basename($filePath) 
+             
+         );
+    } else {
+        abort(404, 'File not found.');
+    }
+
+})->name('download_assignment');
+route::post('upload',[CourseController::class,'upload_work'])->name('upload_work');

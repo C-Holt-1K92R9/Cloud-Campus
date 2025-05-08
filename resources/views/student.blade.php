@@ -420,8 +420,11 @@ foreach ($live_classes as $temp){
                 <li><b><a class="menus" onclick="opentab('Routine')" href="#">Class Routine</a></b></li>
             </ul>
             <div>
-                <br><br><br><br><br><br><br><br><br>
-            <a href="/virtual_campus/login.php" class="button_out">Log Out</a>
+            <form action="{{route('logout')}}" method="POST">
+                @csrf
+                
+            <button type="submit" class="button_out">Log Out</button>
+            </form>
             </div>
         </div>
         <div class="content">
@@ -463,6 +466,7 @@ foreach ($live_classes as $temp){
             <!--End Dashboard-->
             <div class="grid" id="Assignment">
                 <h2>All Assigned Class Works</h2>
+                <p><span style="color:red;"><b>Note:</b></span> You can only sybmit once. So, make sure to submit the correct file. you must submit the file in <span style="color:red;">"PDF"</span> format.</p>
                 <div class="table-container" style="scrollbar-width: thin; overflow-x: auto;">
                     <table>
                         <thead>
@@ -471,7 +475,9 @@ foreach ($live_classes as $temp){
                                 <th>Course Name</th>
                                 <th>Class Work</th>
                                 <th>Due Date</th>
-                                <th>Submission Status</th>
+                                <th>Download</th>
+                                <th>Add Work</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -482,7 +488,31 @@ foreach ($live_classes as $temp){
                                         <td>{{ $course->course_name }}</td>
                                         <td>{{ $course->class_work }}</td>
                                         <td>{{ $course->work_due_date }}</td>
-                                        <td><button onclick="open_status('{{ $course->course_code . $course->course_section }}')" type="submit" class="button" style=" padding: .5em 1.5em;">Download</button></td>
+                                        <form action="{{route('download_assignment')}}" method="GET">
+                                            @csrf
+                                            <input type="hidden" name="file" value="Assignments/{{ $course->course_code }}_{{ $course->course_section}}/work/{{ $course->class_work}}">
+                                            
+                                        <td><button type="submit" class="button" style=" padding: .5em 1.5em;">Download</button></td>
+                                        </form>
+                                        <form action="{{route('upload_work')}}" method="POST" enctype="multipart/form-data">
+                                            @csrf
+                                            <input type="hidden" name="course_id" value="{{ $course->course_id }}">
+                                            <input type="hidden" name="student_name" value="{{ session('user_name') }}">
+                                            <input type="hidden" name="student_id" value="{{ session('user_id') }}">
+                                            <td><input type="file" name="submition_file" style=" padding: 1em" required><br>
+                                            <button type="submit" style=" padding: .25em 1em;" class="button">Turn In</button></td>
+                                           
+                                         </form>
+                                         <td>
+                                                <?php 
+                                                    $status=Course::where('class_work_link','like', '%' .session('user_id') . '%')->where('course_id',$course->course_id)->first();
+                                                ?>
+                                                @if (!empty($status))
+                                                    <span style="color:green;">Submitted</span>
+                                                @else
+                                                <span style="color:red;">Not Submitted</span>
+                                                @endif
+                                            </td>
                                     </tr>
                                     
                             @endforeach
