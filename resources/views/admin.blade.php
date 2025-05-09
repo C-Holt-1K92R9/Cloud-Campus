@@ -13,7 +13,7 @@ $enrollments = \App\Models\Enrollment::all();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRAC University Virtual Campus - Admin Panel</title>
+    <title>BRAC University Cloud Campus - Admin Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body, html {
@@ -137,7 +137,7 @@ $enrollments = \App\Models\Enrollment::all();
             color: #2ecc71;
             font-size: 0.9em;
         }
-        .virtual-campus {
+        .cloud-campus {
             color: #295CA9;
             font-size: 1.4em;
             font-style: italic;
@@ -268,7 +268,7 @@ $enrollments = \App\Models\Enrollment::all();
     <div class="container">
         <div class="sidebar">
             <img src="/logo.png" alt="BRAC University Logo" class="logo">
-            <h2 class="virtual-campus"><b>VIRTUAL CAMPUS</b></h2>
+            <h2 class="cloud-campus"><b>CLOUD CAMPUS</b></h2>
             <ul class="menu">
                 <li><b><a class="menus active" onclick="opentab('Dashboard')" href="#">Dashboard</a></b></li>
                 <li><b><a class="menus" onclick="opentab('ManageStudents')" href="#">Manage Students</a></b></li>

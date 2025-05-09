@@ -43,7 +43,7 @@ foreach ($live_classes as $temp){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRAC University Virtual Campus</title>
+    <title>BRAC University Cloud Campus</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -169,7 +169,7 @@ foreach ($live_classes as $temp){
             color: #2ecc71;
             font-size: 0.9em;
         }
-        .virtual-campus {
+        .cloud-campus {
             color: #295CA9;
             font-size: 1.4em;
             font-style: italic;
@@ -177,7 +177,7 @@ foreach ($live_classes as $temp){
             margin-bottom: 30px;
             animation: glow 1s ease-in-out infinite alternate;
         }
-        .virtual-campus {
+        .cloud-campus {
             animation: neon 1s ease infinite;
             -moz-animation: neon 1s ease infinite;
             -webkit-animation: neon 1s ease infinite;
@@ -432,7 +432,7 @@ foreach ($live_classes as $temp){
     <div class="container">
         <div class="sidebar">
             <img src="/logo.png" alt="BRAC University Logo" class="logo">
-            <h2 class="virtual-campus"><b>VIRTUAL CAMPUS</b></h2>
+            <h2 class="cloud-campus"><b>CLOUD CAMPUS</b></h2>
             <ul class="menu">
                 <li><b><a class="menus active" onclick="opentab('Dashboard')" href="#">Dashboard</a></b></li>
                 <li><b><a class="menus active" onclick="opentab('Assignment')" href="#">Assign Class Work</a></b></li>

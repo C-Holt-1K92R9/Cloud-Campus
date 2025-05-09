@@ -29,6 +29,7 @@
             top: 180px;
         }
         .logo {
+            
             max-width: 140%;
             max-height: 140%;
         }
@@ -42,7 +43,7 @@
         }
         .login-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 0.5rem;
         }
         
         
@@ -105,7 +106,7 @@
     <div class="login-container">
         <div class="login-header">
             <div class="spinner"></div>
-            <h2>Welcome Back</h2>
+            <br><br><br><br><h2>Welcome Back</h2>
         </div>
         <?php if (!empty($error)): ?>
             <div class="error"><?php echo $error; ?></div>
