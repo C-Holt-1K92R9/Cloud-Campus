@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Course;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
-use Symfony\Component\HttpFoundation\Response; // Use this for response()->download
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Str; 
 use Illuminate\Support\Facades\File; 
 class CourseController extends Controller
@@ -101,9 +101,14 @@ public function add_work(Request $request)
         $path = $work_file->storeAs('Assignments/' . $folderName."/work", $work_file->getClientOriginalName(), 'public');
         $course->class_work= $work_file->getClientOriginalName();
         $course->work_due_date= $request->input('work_due_date');
+        $course->class_work_link= "";
     }
     $course->save();
-    return redirect()->route('redirect');
+    $files = Storage::disk("public")->files('Assignments/' . $folderName."/submission");
+            if (!empty($files)) {   
+                Storage::disk("public")->delete($files);
+            }
+     return redirect()->route('redirect');
 }
 public function upload_work(Request $request)
 {
@@ -129,53 +134,30 @@ public function upload_work(Request $request)
 public function downloadAllSubmissions(Request $request)
     {
         $submissionFolderPath = $request->input('file');
-
         if (empty($submissionFolderPath)) {
              return back()->with('error', 'Folder path not provided.');
         }
-
         $diskName = 'public';
-
         $filesInFolder = Storage::disk($diskName)->allFiles($submissionFolderPath);
-
         if (empty($filesInFolder)) {
             return back()->with('error', 'No submissions found in this folder.');
         }
-
         $tempZipFileName = 'submissions_' . Str::random(10) . '.zip';
-        
-        // === Modified line: Create path in public folder ===
         $tempZipDirectory = public_path('temp_zips');
         $tempZipFilePath = $tempZipDirectory . '/' . $tempZipFileName;
-        // =================================================
-
-        // === Ensure the temporary public directory exists ===
         if (!File::exists($tempZipDirectory)) {
-            File::makeDirectory($tempZipDirectory, 0775, true); // Create recursively with permissions
+            File::makeDirectory($tempZipDirectory, 0775, true);
         }
-        // ===================================================
-
-
         $zip = new ZipArchive;
-        // === Use the new temporary path in public ===
         if ($zip->open($tempZipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
-        // ==========================================
-
             foreach ($filesInFolder as $filePath) {
                 $fileName = basename($filePath);
-                // Need to get the file content from the 'public' storage disk
                 $fileContents = Storage::disk($diskName)->get($filePath);
                 $zip->addFromString($fileName, $fileContents);
             }
-
             $zip->close();
 
-            // === Return the file from the new temporary path in public ===
-            // You can choose to delete it after sending or not, as per your previous request
-            return response()->download($tempZipFilePath)->deleteFileAfterSend(true); // Delete file after send
-            // Or: return response()->download($tempZipFilePath)->deleteFileAfterSend(true); // Delete file after send
-            // ==========================================================
-
+            return response()->download($tempZipFilePath)->deleteFileAfterSend(true); 
         } else {
             return back()->with('error', 'Could not create zip archive.');
         }

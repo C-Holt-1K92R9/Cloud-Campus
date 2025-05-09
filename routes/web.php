@@ -14,7 +14,7 @@ Route::get('/admin', function () {
         return view("admin");
     }
     else {
-        redirect()->route('/');
+       return  redirect('/');;
     }
     
 });
@@ -55,7 +55,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // for faculty pannel
 Route::post('/class/cancel', [CourseController::class, 'cancel_class'])->name('cancel_class');
 Route::post('/', function () {
-    return redirect()->route('/');
+    return  redirect('/');;
 })->name('redirect');
 
 Route::get('/faculty', function () {
