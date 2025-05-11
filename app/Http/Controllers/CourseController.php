@@ -101,16 +101,18 @@ public function add_work(Request $request)
         $path = $work_file->storeAs('Assignments/' . $folderName."/work", $work_file->getClientOriginalName(), 'public');
         $course->class_work= $work_file->getClientOriginalName();
         $course->work_due_date= $request->input('work_due_date');
-        $course->class_work_link= "";
+        
     }
-    $course->save();
+    
     if ($request->input('update_New')=='assign'){
-    $files = Storage::disk("public")->files('Assignments/' . $folderName."/submission");
-            if (!empty($files)) {   
-                Storage::disk("public")->delete($files);
-            }
+        $course->class_work_link= "";
+        $files = Storage::disk("public")->files('Assignments/' . $folderName."/submission");
+                if (!empty($files)) {   
+                    Storage::disk("public")->delete($files);
+                }
         }
-     return redirect()->route('redirect');
+    $course->save();
+    return redirect()->route('redirect');
 }
 public function upload_work(Request $request)
 {
