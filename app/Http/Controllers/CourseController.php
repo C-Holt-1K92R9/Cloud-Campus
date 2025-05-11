@@ -104,10 +104,12 @@ public function add_work(Request $request)
         $course->class_work_link= "";
     }
     $course->save();
+    if ($request->input('update_New')=='assign'){
     $files = Storage::disk("public")->files('Assignments/' . $folderName."/submission");
             if (!empty($files)) {   
                 Storage::disk("public")->delete($files);
             }
+        }
      return redirect()->route('redirect');
 }
 public function upload_work(Request $request)

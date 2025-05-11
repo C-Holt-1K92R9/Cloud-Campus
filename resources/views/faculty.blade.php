@@ -497,9 +497,19 @@ foreach ($live_classes as $temp){
                         @endforeach    
                         </select>
                 </label>
-                <input type="file" name="class_work" required>
                 
-                <input type="date" name="work_due_date" placeholder="Due Date" required><br><br>
+               
+               
+                
+                <label>
+                <input type="file" name="class_work" required>
+                </label>
+                <label>
+                <input type="date" name="work_due_date" placeholder="Due Date" required>
+                </label>
+                 <input type="radio" name="update_New" placeholder="Class Work" value="update" required checked> <label>Update</label>
+                <input type="radio" name="update_New" placeholder="Class Work" value="assign" required><label>Assign</label>
+                <br><br>
                 <button type="submit" class="button">Assign Work</button>
                 </form>
                 <h2>All Assigned Class Works</h2>
