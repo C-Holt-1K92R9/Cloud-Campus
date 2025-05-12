@@ -44,7 +44,7 @@ Route::get('/', function () {
         else if (Session::get('user_type') == 'faculty') {
             return redirect('/faculty');
         }
-        return redirect('/admin');
+        
     }
     return view('login');
 });
