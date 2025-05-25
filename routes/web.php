@@ -35,7 +35,7 @@ Route::post('/enrollment/del', [EnrollmentController::class, 'destroy'])->name('
 //login
 Route::get('/', function () {
     if (Session::has('user_type')) {
-        if (Session::get('user_type') == 'admin') {
+        if (Session::get('user_type') == 'admin'){
             return redirect('/admin');
         } 
         else if (Session::get('user_type') == 'student') {
